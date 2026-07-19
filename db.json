@@ -1,0 +1,97 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "title": "Frontend Development Bootcamp",
+      "category": "Technology",
+      "price": 49,
+      "rating": 4.8,
+      "image": "https://placehold.co/600x400?text=Frontend",
+      "slug": "frontend-development-bootcamp",
+      "subtitle": "Build modern web apps with React and Next.js",
+      "description": "Learn HTML, CSS, JavaScript, React, and Next.js by building real projects from scratch.",
+      "enrolledText": "12,430 students",
+      "whatYouLearn": ["React fundamentals", "Next.js routing", "State management", "Component architecture"],
+      "curriculum": [
+        { "title": "Web Basics", "lessons": ["HTML", "CSS", "JavaScript"] },
+        { "title": "React", "lessons": ["JSX", "Hooks", "Props & State"] },
+        { "title": "Next.js", "lessons": ["App Router", "Data Fetching", "Deployment"] }
+      ],
+      "features": ["24 hours video", "Certificate", "Lifetime access"],
+      "ctaHref": "#"
+    },
+    {
+      "id": 2,
+      "title": "Data Analysis with Python",
+      "category": "Technology",
+      "price": 59,
+      "rating": 4.7,
+      "image": "https://placehold.co/600x400?text=Data+Analysis",
+      "slug": "data-analysis-with-python",
+      "subtitle": "From raw data to insights",
+      "description": "Master pandas, NumPy, and visualization to analyze and present data effectively.",
+      "enrolledText": "9,210 students",
+      "whatYouLearn": ["pandas basics", "Data cleaning", "Exploratory analysis", "Visualization"],
+      "curriculum": [
+        { "title": "Python Refresher", "lessons": ["Syntax", "Functions", "Modules"] },
+        { "title": "Data Tools", "lessons": ["NumPy", "pandas", "Matplotlib"] }
+      ],
+      "features": ["18 hours video", "Practical datasets", "Certificate"],
+      "ctaHref": "#"
+    },
+    {
+      "id": 3,
+      "title": "UI/UX Design Essentials",
+      "category": "Design",
+      "price": 39,
+      "rating": 4.6,
+      "image": "https://placehold.co/600x400?text=UI%2FUX",
+      "slug": "ui-ux-design-essentials"
+    },
+    {
+      "id": 4,
+      "title": "Digital Marketing Masterclass",
+      "category": "Business",
+      "price": 44,
+      "rating": 4.5,
+      "image": "https://placehold.co/600x400?text=Marketing",
+      "slug": "digital-marketing-masterclass"
+    },
+    {
+      "id": 5,
+      "title": "Project Management Fundamentals",
+      "category": "Business",
+      "price": 35,
+      "rating": 4.4,
+      "image": "https://placehold.co/600x400?text=Project+Management",
+      "slug": "project-management-fundamentals"
+    },
+    {
+      "id": 6,
+      "title": "Mobile App Development",
+      "category": "Technology",
+      "price": 65,
+      "rating": 4.7,
+      "image": "https://placehold.co/600x400?text=Mobile+Apps",
+      "slug": "mobile-app-development"
+    },
+    {
+      "id": 7,
+      "title": "Creative Content Writing",
+      "category": "Writing",
+      "price": 29,
+      "rating": 4.3,
+      "image": "https://placehold.co/600x400?text=Writing",
+      "slug": "creative-content-writing"
+    },
+    {
+      "id": 8,
+      "title": "English for Career Growth",
+      "category": "Language",
+      "price": 25,
+      "rating": 4.2,
+      "image": "https://placehold.co/600x400?text=English",
+      "slug": "english-for-career-growth"
+    }
+  ]
+}
