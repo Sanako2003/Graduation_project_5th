@@ -1,3 +1,4 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -8,6 +9,10 @@ const nextConfig: NextConfig = {
         hostname: "placehold.co",
       },
     ],
+  },
+  turbopack: {
+    // ensure Turbopack uses this project directory as the workspace root
+    root: path.resolve(__dirname),
   },
 };
 

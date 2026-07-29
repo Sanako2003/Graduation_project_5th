@@ -6,7 +6,7 @@
     "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && start chrome http://localhost:3000\"",
     "build": "next build",
     "start": "next start",
-    "mock-api": "json-server --watch db.json --port 4000",
+    "mock-api": "json-server --watch db.json --port 8000",
     "lint": "eslint"
   },
   "dependencies": {

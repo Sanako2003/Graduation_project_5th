@@ -1,110 +1,112 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
 import CourseCard from "./CourseCard";
 
 type Course = {
   id: number;
   title: string;
   price: number;
-  rating: number;
+  average_rating: number;
   image: string;
-  students: number;
+  students?: number;
+  enrolledText?: string;
 };
 
-async function getCourses(): Promise<Course[]> {
-  // ✅ Mock Data بدل API
-  return [
-    {
-      id: 1,
-      title: "The Advanced Web Developer Bootcamp",
-      price: 49,
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-      students: 31000,
-    },
-    {
-      id: 2,
-      title: "The Complete 2024 PHP Full Stack Bootcamp",
-      price: 49,
-      rating: 4.9,
-      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
-      students: 42000,
-    },
-    {
-      id: 3,
-      title: "Frontend Web Development with React",
-      price: 59,
-      rating: 4.7,
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-      students: 50000,
-    },
-    {
-      id: 4,
-      title: "UI/UX Design Bootcamp",
-      price: 39,
-      rating: 4.6,
-      image: "https://images.unsplash.com/photo-1559028012-481c04fa702d",
-      students: 28000,
-    },
-  ];
-}
+export default function CoursesSection() {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-export default async function CoursesSection() {
-  const courses = await getCourses();
+  const fetchCourses = useCallback(async (pageNumber: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/courses?per_page=4&page=${pageNumber}`,
+        { cache: "no-store" },
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch home courses");
+      }
+
+      const result = await res.json();
+      const coursesArray = Array.isArray(result) ? result : result.data || [];
+
+      if (!Array.isArray(coursesArray)) {
+        setCourses([]);
+        return;
+      }
+
+      setCourses(
+        coursesArray.map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          price: Number(c.price) || 0,
+          average_rating: Number(c.average_rating) || 0,
+          image: c.image || "https://placehold.co/600x400",
+          students: c.students_count || 0,
+          enrolledText: c.enrolledText || "",
+        })),
+      );
+      setHasMore(Array.isArray(coursesArray) && coursesArray.length === 4);
+    } catch (error) {
+      console.error("Failed to fetch courses:", error);
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCourses(page);
+  }, [page, fetchCourses]);
+
+  const pageNumbers = [page];
 
   return (
-    <section className="py-20 bg-[#f8f7fc]">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* HEADER */}
-        <div className="mb-6">
+    <section className="py-12 bg-gray-50">
+      <div className="px-4 mx-auto max-w-7xl">
+        <div className="max-w-md mx-auto text-center">
           <h2 className="text-3xl font-bold text-gray-900">
-            Trending Courses Across Diverse Fields
+            Our Popular Courses
           </h2>
-          <p className="text-gray-500 mt-2 text-sm">
-            Handpicked courses across various categories to help you achieve your learning goals.
-          </p>
         </div>
 
-        {/* TABS */}
-        <div className="flex gap-6 overflow-x-auto mb-10 text-sm font-medium">
-          {[
-            "Technology & Software",
-            "IT & Software",
-            "Design & Creative arts",
-            "Business & Management",
-            "Health & Wellness",
-            "Marketing",
-            "Lifestyle",
-          ].map((cat, i) => (
-            <button
-              key={i}
-              className={`pb-2 whitespace-nowrap border-b-[2px] ${
-                i === 0
-                  ? "text-purple-600 border-purple-600"
-                  : "text-gray-500 border-transparent hover:text-purple-600"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="grid grid-cols-1 gap-6 mt-12 sm:grid-cols-2 lg:grid-cols-4">
+          {courses.length > 0 ? (
+            courses.map((course) => (
+              <CourseCard key={course.id} course={course} />
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500 py-6">
+              {loading ? "Loading courses..." : "No courses found."}
+            </p>
+          )}
         </div>
 
-        {/* COURSES */}
-        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
-          {courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
-        </div>
-
-        {/* ARROWS */}
-        <div className="flex justify-end gap-3 mt-6">
-          <button className="w-10 h-10 rounded-full border bg-white shadow flex items-center justify-center hover:bg-gray-100">
-            ←
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+          <button
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            disabled={page <= 1 || loading}
+            className="rounded-full border px-4 py-2 text-sm font-semibold transition-all hover:bg-slate-100 disabled:opacity-50"
+          >
+            Previous
           </button>
-          <button className="w-10 h-10 rounded-full border bg-white shadow flex items-center justify-center hover:bg-gray-100">
-            →
+
+          <span className="px-4 py-2 text-sm font-semibold text-slate-700">
+            Page {page}
+          </span>
+
+          <button
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={!hasMore || loading}
+            className="rounded-full border px-4 py-2 text-sm font-semibold transition-all hover:bg-slate-100 disabled:opacity-50"
+          >
+            Next
           </button>
         </div>
-
       </div>
     </section>
   );

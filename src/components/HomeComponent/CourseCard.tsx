@@ -2,7 +2,7 @@ type Course = {
   id: number;
   title: string;
   price: number;
-  rating: number;
+  average_rating: number;
   image: string;
   students?: number;
   enrolledText?: string;
@@ -29,7 +29,7 @@ export default function CourseCard({ course }: { course: Course }) {
 
         {/* RATING + STUDENTS */}
         <div className="flex items-center gap-3 mt-3 text-sm text-gray-500">
-          <span className="text-yellow-500">⭐ {course.rating}</span>
+          <span className="text-yellow-500">⭐ {course.average_rating}</span>
           <span>
             {course.students
               ? `${course.students.toLocaleString()} students`

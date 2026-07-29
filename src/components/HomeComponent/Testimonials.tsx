@@ -109,7 +109,7 @@ export default function Testimonials() {
     async function loadTestimonials() {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:4000/testimonials", {
+        const res = await fetch("http://127.0.0.1:8000/testimonials", {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
