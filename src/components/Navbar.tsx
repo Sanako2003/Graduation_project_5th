@@ -4,10 +4,15 @@ import { Bell, Settings, User, Search, Menu } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/Assessment", label: "Assessment" },         
+  { href: "/Assessment", label: "Assessment" },
   { href: "/courses", label: "Courses" },
   { href: "/contact", label: "Contact us" },
   { href: "/profile", label: "Profile" },
+];
+
+const authLinks = [
+  { href: "/login", label: "Login" },
+  { href: "/register", label: "Register" },
 ];
 export default function Navbar() {
   return (
@@ -80,6 +85,18 @@ export default function Navbar() {
 
             {/* فاصل عمودي ناعم عالي النقاء */}
             <div className="hidden sm:block w-px h-5 bg-slate-200 mx-1 flex-shrink-0"></div>
+
+            <div className="hidden items-center gap-2 sm:flex">
+              {authLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-full px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-purple-50 hover:text-purple-600"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
 
             {/* كبسولة ملف المستخدم الشخصي - محايدة وراقية */}
             <Link href="/profile" className="flex items-center gap-3 group flex-shrink-0 bg-slate-50 hover:bg-slate-100 p-1.5 pr-3 rounded-full border border-slate-200/40 transition-all duration-200">
