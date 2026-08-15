@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/context/AuthContext";
 import type { Metadata } from "next";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer'; 
@@ -25,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${varelaRound.variable}`}>
       <body>
-        <Navbar />
-        {children}
-        <Footer />
+        <AuthProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

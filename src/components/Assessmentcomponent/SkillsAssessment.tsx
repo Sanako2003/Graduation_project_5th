@@ -1,124 +1,257 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Icon } from '@iconify/react';
+import { useState, useEffect } from "react";
+import { Icon } from "@iconify/react";
+import { fetchPlacementTopics, generateQuiz } from "@/lib/api";
 
-interface KeywordTagProps {
-  label: string;
+export interface QuestionOption {
+  option_id: number;
+  option_key: "A" | "B" | "C" | "D";
+  option_text: string;
 }
 
-const KeywordTag: React.FC<KeywordTagProps> = ({ label }) => (
-  <div className="bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-600 px-4 py-2 rounded-full text-xs font-medium border border-slate-200/60 transition-colors cursor-default">
-    {label}
-  </div>
-);
-
-interface InfoCardProps {
-  id: string;
-  title: string;
-  iconName: string;
-  bgColor: string;
-  textColor: string;
-  isSelected: boolean;
-  onSelect: () => void;
+export interface Question {
+  question_id: number;
+  question_number: number;
+  question_text: string;
+  difficulty_level: string;
+  options: QuestionOption[];
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ title, iconName, bgColor, textColor, isSelected, onSelect }) => (
-  <div 
-    onClick={onSelect}
-    className={`flex items-center justify-between p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-300 border-2 ${
-      isSelected 
-        ? 'border-purple-600 bg-white ring-4 ring-purple-100 scale-[1.03] shadow-md' 
-        : 'border-white/40 hover:border-slate-300 bg-opacity-90 hover:scale-[1.01]'
-    } ${bgColor}`}
-  >
-    <span className={`text-base font-bold tracking-wide ${textColor}`}>{title}</span>
-    <Icon icon={iconName} className={`w-8 h-8 transition-transform duration-300 ${isSelected ? 'scale-110' : ''}`} />
-  </div>
-);
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  icon: string | null;
+  order_index: number;
+}
 
-export default function SkillsAssessment() {
-  const router = useRouter();
-  const [selectedField, setSelectedField] = useState<string | null>(null);
+interface Props {
+  onQuizReady: (questions: Question[], title: string) => void;
+}
 
-  const keywords = [
-    'Software Engineering', 'Cybersecurity', 'Product Management', 
-    'Data Science', 'Artificial Intelligence', 'Cloud Computing', 
-    'Network Systems', 'Technical Support', 'Game Development', 
-    'Digital Design & UX', 'Mechatronics'
-  ];
+const FALLBACK_ICONS: Record<string, string> = {
+  default: "fluent-emoji:bookmark-tabs",
+};
 
-  const infoCards = [
-    { id: 'game-development', title: 'Game Development', iconName: 'fluent-emoji:space-invader', bgColor: 'bg-[#eef2ff]', textColor: 'text-[#3b82f6]' },
-    { id: 'ui-ux-design', title: 'UI/UX Design', iconName: 'fluent-emoji:artist-palette', bgColor: 'bg-[#e6f4ea]', textColor: 'text-[#10b981]' },
-    { id: 'software-engineering', title: 'Software Engineering', iconName: 'fluent-emoji:technologist', bgColor: 'bg-[#fff7ed]', textColor: 'text-[#f97316]' },
-    { id: 'artificial-intelligence', title: 'Artificial Intelligence', iconName: 'fluent-emoji:robot', bgColor: 'bg-[#fff1f2]', textColor: 'text-[#f43f5e]' }
-  ];
+const CARD_COLORS = [
+  { bg: "bg-[#eef2ff]", text: "text-[#3b82f6]" },
+  { bg: "bg-[#e6f4ea]", text: "text-[#10b981]" },
+  { bg: "bg-[#fff7ed]", text: "text-[#f97316]" },
+  { bg: "bg-[#fff1f2]", text: "text-[#f43f5e]" },
+  { bg: "bg-[#f5f3ff]", text: "text-[#8b5cf6]" },
+  { bg: "bg-[#ecfeff]", text: "text-[#06b6d4]" },
+];
 
-  const handleStartExam = () => {
-    if (!selectedField) return;
-    router.push(`/Assessment/quiz?field=${selectedField}`);
+const keywords = [
+  "Software Engineering",
+  "Cybersecurity",
+  "Product Management",
+  "Data Science",
+  "Artificial Intelligence",
+  "Cloud Computing",
+  "Network Systems",
+  "Technical Support",
+  "Game Development",
+  "Digital Design & UX",
+  "Mechatronics",
+];
+
+export default function SkillsAssessment({ onQuizReady }: Props) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCats, setLoadingCats] = useState(true);
+  const [catsError, setCatsError] = useState("");
+
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<"topics" | "questions" | null>(null);
+  const [error, setError] = useState("");
+
+  // جيب الـ categories من Laravel
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((json) => {
+        const list: Category[] = Array.isArray(json) ? json : (json.data ?? []);
+        setCategories(list);
+      })
+      .catch(() => setCatsError("تعذّر تحميل التخصصات، تحقق من تشغيل Laravel."))
+      .finally(() => setLoadingCats(false));
+  }, []);
+
+  const handleStart = async () => {
+    if (!selectedId) return;
+    setLoading(true);
+    setError("");
+
+    try {
+      // ── خطوة 1: جيب التوبيكس من Laravel ──
+      setLoadingStep("topics");
+      const topicsData = await fetchPlacementTopics(selectedId);
+      // topicsData المتوقع: { category: string, placement_topics: [...] }
+
+      // ── خطوة 2: بعت التوبيكس لـ /placement/generate وولّد الأسئلة ──
+      setLoadingStep("questions");
+      const quizData = await generateQuiz({
+        category: topicsData.category,
+        placement_topics: topicsData.placement_topics,
+      });
+
+      onQuizReady(
+        quizData.questions,
+        quizData.category || topicsData.category || "Placement Assessment",
+      );
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "حدث خطأ غير متوقع");
+    } finally {
+      setLoading(false);
+      setLoadingStep(null);
+    }
   };
 
+  // نص زر التحميل حسب الخطوة الحالية
+  const loadingLabel =
+    loadingStep === "topics"
+      ? "Loading topics..."
+      : loadingStep === "questions"
+      ? "Generating questions..."
+      : "Loading...";
+
   return (
-    <section id="assessment" className="w-full py-12 md:py-20 px-4 sm:px-6 lg:px-8 bg-transparent">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12 items-center">
-        
-        {/* القسم الأيسر: بطاقات الاختيار */}
-        <div className="relative flex flex-col gap-5 p-8 bg-gradient-to-b from-slate-50/80 to-white/40 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 min-h-[420px] justify-center">
-          <div className="absolute inset-0 bg-[radial-gradient(#c084fc_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.05] pointer-events-none" />
-          
-          {infoCards.map((card) => (
-            <InfoCard 
-              key={card.id} 
-              {...card} 
-              isSelected={selectedField === card.id}
-              onSelect={() => setSelectedField(card.id)}
-            />
-          ))}
+    <section className="w-full py-12 md:py-20 px-4 sm:px-6 lg:px-8 bg-transparent">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-12 items-center">
+        {/* ---- بطاقات الـ categories ---- */}
+        <div className="relative flex flex-col gap-4 p-8 bg-gradient-to-b from-slate-50/80 to-white/40 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 min-h-[420px] justify-center">
+          <div className="absolute inset-0 bg-[radial-gradient(#c084fc_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.05] pointer-events-none rounded-3xl" />
+
+          {loadingCats && (
+            <div className="flex items-center justify-center py-12 gap-3 text-slate-400 text-sm">
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-purple-400 border-t-transparent" />
+              Loading fields...
+            </div>
+          )}
+
+          {catsError && (
+            <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm text-center">
+              {catsError}
+            </div>
+          )}
+
+          {!loadingCats &&
+            !catsError &&
+            categories.map((cat, index) => {
+              const color = CARD_COLORS[index % CARD_COLORS.length];
+              const icon = cat.icon || FALLBACK_ICONS.default;
+              const selected = selectedId === cat.id;
+
+              return (
+                <div
+                  key={cat.id}
+                  onClick={() => setSelectedId(cat.id)}
+                  className={`flex items-center justify-between p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-300 border-2 ${
+                    selected
+                      ? "border-purple-600 bg-white ring-4 ring-purple-100 scale-[1.03] shadow-md"
+                      : `border-white/40 hover:border-slate-300 hover:scale-[1.01] ${color.bg}`
+                  }`}
+                >
+                  <span
+                    className={`text-base font-bold tracking-wide ${selected ? "text-purple-700" : color.text}`}
+                  >
+                    {cat.name}
+                  </span>
+                  <Icon
+                    icon={icon}
+                    className={`w-8 h-8 transition-transform duration-300 ${selected ? "scale-110" : ""}`}
+                  />
+                </div>
+              );
+            })}
         </div>
 
-        {/* القسم الأيمن: النصوص والتنبيه */}
+        {/* ---- النصوص والزر ---- */}
         <div className="flex flex-col gap-6 text-left lg:pl-6">
           <div className="flex items-start sm:items-center gap-4 flex-col sm:flex-row">
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
               Masar Tech Aptitude <br />
               <span className="text-purple-600">Scale & Discovery</span>
             </h1>
-            <Icon icon="fluent-emoji:light-bulb" className="w-14 h-14 animate-pulse flex-shrink-0 mt-2 sm:mt-0" />
+            <Icon
+              icon="fluent-emoji:light-bulb"
+              className="w-14 h-14 animate-pulse flex-shrink-0 mt-2 sm:mt-0"
+            />
           </div>
-          
+
           <p className="text-lg text-slate-600 leading-relaxed max-w-2xl">
-            This assessment helps you discover the perfect tech fields that align with your natural analytical abilities and personal interests.
+            This assessment helps you discover the perfect tech fields that
+            align with your natural analytical abilities and personal interests.
           </p>
 
-          {/* التنبيه المطلوب */}
-          <div className={`transition-all duration-500 overflow-hidden ${selectedField ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'}`}>
+          {/* تنبيه اختيار */}
+          <div
+            className={`transition-all duration-500 overflow-hidden ${selectedId ? "max-h-0 opacity-0" : "max-h-12 opacity-100"}`}
+          >
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
               <Icon icon="fluent:info-16-filled" className="w-3 h-3" />
               Please select a domain first to start
             </div>
           </div>
 
+          {/* loading step indicator */}
+          {loading && loadingStep && (
+            <div className="flex items-center gap-3 text-sm text-slate-500">
+              <span className="h-3 w-3 rounded-full bg-purple-400 animate-pulse" />
+              <span>
+                {loadingStep === "topics"
+                  ? "Step 1/2 — Fetching topics from server..."
+                  : "Step 2/2 — Generating your questions..."}
+              </span>
+            </div>
+          )}
+
+          {/* error توليد */}
+          {error && (
+            <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* keywords */}
           <div className="flex flex-wrap gap-2.5 pt-2 max-w-2xl">
-            {keywords.map((keyword, index) => (
-              <KeywordTag key={index} label={keyword} />
+            {keywords.map((kw, i) => (
+              <div
+                key={i}
+                className="bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-600 px-4 py-2 rounded-full text-xs font-medium border border-slate-200/60 transition-colors cursor-default"
+              >
+                {kw}
+              </div>
             ))}
           </div>
 
           <div className="pt-2">
             <button
-              onClick={handleStartExam}
-              disabled={!selectedField}
+              onClick={handleStart}
+              disabled={!selectedId || loading}
               className={`group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 ${
-                selectedField 
-                  ? 'shadow-[0_16px_36px_rgba(124,58,237,0.28)] hover:-translate-y-0.5 hover:from-purple-700 hover:to-indigo-700 hover:shadow-[0_20px_46px_rgba(124,58,237,0.36)] active:scale-[0.98] cursor-pointer'
-                  : 'opacity-40 cursor-not-allowed shadow-none select-none contrast-75'
+                selectedId && !loading
+                  ? "shadow-[0_16px_36px_rgba(124,58,237,0.28)] hover:-translate-y-0.5 hover:from-purple-700 hover:to-indigo-700 cursor-pointer"
+                  : "opacity-40 cursor-not-allowed"
               }`}
             >
-              {selectedField ? 'Start the Exam Now' : 'Please Select a Field First'}
-              <span className="text-base transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+              {loading ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  {loadingLabel}
+                </>
+              ) : selectedId ? (
+                <>
+                  Start the Exam Now
+                  <span className="text-base transition-transform duration-200 group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </>
+              ) : (
+                "Please Select a Field First"
+              )}
             </button>
           </div>
         </div>
