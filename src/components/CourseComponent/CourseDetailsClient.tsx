@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 
 // Local types (mirror server response shape used by the page)
-type Module = { id: number; title: string; duration_minutes?: number; order?: number };
+type Module = { id: number; name: string; duration_minutes?: number; order_index?: number };
 type LearningOutcome = { id: number; outcome: string };
 type Skill = { id: number; name: string };
 type Instructor = { id: number; name: string; avatar?: string };
@@ -312,7 +312,7 @@ export default function CourseDetailsClient({
             <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto pr-1">
               {course.modules
                 .slice()
-                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
                 .map((mod: Module) => {
                   const isActive = currentModuleId === mod.id;
                   return (
@@ -336,7 +336,7 @@ export default function CourseDetailsClient({
                             isActive ? "text-purple-500" : "text-slate-400"
                           }`}
                         />
-                        <span className="text-sm truncate">{mod.title}</span>
+                        <span className="text-sm truncate">{mod.name}</span>
                       </div>
                       {mod.duration_minutes != null && (
                         <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md flex-shrink-0 ml-2">

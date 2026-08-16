@@ -75,15 +75,14 @@ function normalizeQuestion(rawQuestion: any) {
   };
 }
 
-export async function generateQuiz(payload: GenerateQuizPayload) {
-  const token = localStorage.getItem("token");
+export async function generateQuiz(categoryId: number) {
   const res = await fetch(`${API_BASE}/placement/generate`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ category_id: categoryId }),
   });
 
   if (!res.ok) {
@@ -98,4 +97,45 @@ export async function generateQuiz(payload: GenerateQuizPayload) {
       ? data.questions.map(normalizeQuestion)
       : [],
   };
+}
+// ── تسليم الإجابات ──
+export interface SubmitAnswer {
+  question_id: number;
+  selected_option_id: number;
+}
+
+export interface Recommendation {
+  rank: number;
+  course_title: string;
+  score: number;
+}
+
+export interface SubmitResult {
+  message: string;
+  score: number;
+  total: number;
+  known_syllabi: string[];
+  recommendations: Recommendation[];
+}
+
+export async function submitQuiz(
+  attemptId: number,
+  answers: SubmitAnswer[],
+): Promise<SubmitResult> {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/placement/${attemptId}/submit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ answers }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "فشل تسليم الإجابات");
+  }
+
+  return res.json();
 }

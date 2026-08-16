@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { fetchPlacementTopics, generateQuiz } from "@/lib/api";
+import { generateQuiz } from "@/lib/api";
 
 export interface QuestionOption {
   option_id: number;
@@ -27,7 +27,7 @@ interface Category {
 }
 
 interface Props {
-  onQuizReady: (questions: Question[], title: string) => void;
+  onQuizReady: (questions: Question[], title: string, attemptId: number) => void;
 }
 
 const FALLBACK_ICONS: Record<string, string> = {
@@ -44,32 +44,28 @@ const CARD_COLORS = [
 ];
 
 const keywords = [
-  "Software Engineering",
-  "Cybersecurity",
-  "Product Management",
-  "Data Science",
-  "Artificial Intelligence",
-  "Cloud Computing",
-  "Network Systems",
-  "Technical Support",
-  "Game Development",
-  "Digital Design & UX",
-  "Mechatronics",
+  "Software Engineering", "Cybersecurity", "Product Management",
+  "Data Science", "Artificial Intelligence", "Cloud Computing",
+  "Network Systems", "Technical Support", "Game Development",
+  "Digital Design & UX", "Mechatronics",
 ];
 
 export default function SkillsAssessment({ onQuizReady }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCats, setLoadingCats] = useState(true);
   const [catsError, setCatsError] = useState("");
-
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loadingStep, setLoadingStep] = useState<"topics" | "questions" | null>(null);
   const [error, setError] = useState("");
 
-  // جيب الـ categories من Laravel
   useEffect(() => {
-    fetch("/api/categories")
+    const token = localStorage.getItem("token");
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    })
       .then((r) => r.json())
       .then((json) => {
         const list: Category[] = Array.isArray(json) ? json : (json.data ?? []);
@@ -83,44 +79,25 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
     if (!selectedId) return;
     setLoading(true);
     setError("");
-
     try {
-      // ── خطوة 1: جيب التوبيكس من Laravel ──
-      setLoadingStep("topics");
-      const topicsData = await fetchPlacementTopics(selectedId);
-      // topicsData المتوقع: { category: string, placement_topics: [...] }
-
-      // ── خطوة 2: بعت التوبيكس لـ /placement/generate وولّد الأسئلة ──
-      setLoadingStep("questions");
-      const quizData = await generateQuiz({
-        category: topicsData.category,
-        placement_topics: topicsData.placement_topics,
-      });
-
+      const quizData = await generateQuiz(selectedId);
       onQuizReady(
         quizData.questions,
-        quizData.category || topicsData.category || "Placement Assessment",
+        quizData.category || "Placement Assessment",
+        quizData.attempt_id,
       );
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "حدث خطأ غير متوقع");
     } finally {
       setLoading(false);
-      setLoadingStep(null);
     }
   };
-
-  // نص زر التحميل حسب الخطوة الحالية
-  const loadingLabel =
-    loadingStep === "topics"
-      ? "Loading topics..."
-      : loadingStep === "questions"
-      ? "Generating questions..."
-      : "Loading...";
 
   return (
     <section className="w-full py-12 md:py-20 px-4 sm:px-6 lg:px-8 bg-transparent">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-12 items-center">
-        {/* ---- بطاقات الـ categories ---- */}
+
+        {/* ---- Categories ---- */}
         <div className="relative flex flex-col gap-4 p-8 bg-gradient-to-b from-slate-50/80 to-white/40 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 min-h-[420px] justify-center">
           <div className="absolute inset-0 bg-[radial-gradient(#c084fc_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.05] pointer-events-none rounded-3xl" />
 
@@ -137,48 +114,35 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
             </div>
           )}
 
-          {!loadingCats &&
-            !catsError &&
-            categories.map((cat, index) => {
-              const color = CARD_COLORS[index % CARD_COLORS.length];
-              const icon = cat.icon || FALLBACK_ICONS.default;
-              const selected = selectedId === cat.id;
-
-              return (
-                <div
-                  key={cat.id}
-                  onClick={() => setSelectedId(cat.id)}
-                  className={`flex items-center justify-between p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-300 border-2 ${
-                    selected
-                      ? "border-purple-600 bg-white ring-4 ring-purple-100 scale-[1.03] shadow-md"
-                      : `border-white/40 hover:border-slate-300 hover:scale-[1.01] ${color.bg}`
-                  }`}
-                >
-                  <span
-                    className={`text-base font-bold tracking-wide ${selected ? "text-purple-700" : color.text}`}
-                  >
-                    {cat.name}
-                  </span>
-                  <Icon
-                    icon={icon}
-                    className={`w-8 h-8 transition-transform duration-300 ${selected ? "scale-110" : ""}`}
-                  />
-                </div>
-              );
-            })}
+          {!loadingCats && !catsError && categories.map((cat, index) => {
+            const color = CARD_COLORS[index % CARD_COLORS.length];
+            const icon = cat.icon || FALLBACK_ICONS.default;
+            const selected = selectedId === cat.id;
+            return (
+              <div key={cat.id} onClick={() => setSelectedId(cat.id)}
+                className={`flex items-center justify-between p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-300 border-2 ${
+                  selected
+                    ? "border-purple-600 bg-white ring-4 ring-purple-100 scale-[1.03] shadow-md"
+                    : `border-white/40 hover:border-slate-300 hover:scale-[1.01] ${color.bg}`
+                }`}
+              >
+                <span className={`text-base font-bold tracking-wide ${selected ? "text-purple-700" : color.text}`}>
+                  {cat.name}
+                </span>
+                <Icon icon={icon} className={`w-8 h-8 transition-transform duration-300 ${selected ? "scale-110" : ""}`} />
+              </div>
+            );
+          })}
         </div>
 
-        {/* ---- النصوص والزر ---- */}
+        {/* ---- Text + Button ---- */}
         <div className="flex flex-col gap-6 text-left lg:pl-6">
           <div className="flex items-start sm:items-center gap-4 flex-col sm:flex-row">
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
               Masar Tech Aptitude <br />
               <span className="text-purple-600">Scale & Discovery</span>
             </h1>
-            <Icon
-              icon="fluent-emoji:light-bulb"
-              className="w-14 h-14 animate-pulse flex-shrink-0 mt-2 sm:mt-0"
-            />
+            <Icon icon="fluent-emoji:light-bulb" className="w-14 h-14 animate-pulse flex-shrink-0 mt-2 sm:mt-0" />
           </div>
 
           <p className="text-lg text-slate-600 leading-relaxed max-w-2xl">
@@ -186,51 +150,36 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
             align with your natural analytical abilities and personal interests.
           </p>
 
-          {/* تنبيه اختيار */}
-          <div
-            className={`transition-all duration-500 overflow-hidden ${selectedId ? "max-h-0 opacity-0" : "max-h-12 opacity-100"}`}
-          >
+          <div className={`transition-all duration-500 overflow-hidden ${selectedId ? "max-h-0 opacity-0" : "max-h-12 opacity-100"}`}>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
               <Icon icon="fluent:info-16-filled" className="w-3 h-3" />
               Please select a domain first to start
             </div>
           </div>
 
-          {/* loading step indicator */}
-          {loading && loadingStep && (
+          {loading && (
             <div className="flex items-center gap-3 text-sm text-slate-500">
               <span className="h-3 w-3 rounded-full bg-purple-400 animate-pulse" />
-              <span>
-                {loadingStep === "topics"
-                  ? "Step 1/2 — Fetching topics from server..."
-                  : "Step 2/2 — Generating your questions..."}
-              </span>
+              <span>Generating your questions, please wait...</span>
             </div>
           )}
 
-          {/* error توليد */}
           {error && (
             <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
               {error}
             </div>
           )}
 
-          {/* keywords */}
           <div className="flex flex-wrap gap-2.5 pt-2 max-w-2xl">
             {keywords.map((kw, i) => (
-              <div
-                key={i}
-                className="bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-600 px-4 py-2 rounded-full text-xs font-medium border border-slate-200/60 transition-colors cursor-default"
-              >
+              <div key={i} className="bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-600 px-4 py-2 rounded-full text-xs font-medium border border-slate-200/60 transition-colors cursor-default">
                 {kw}
               </div>
             ))}
           </div>
 
           <div className="pt-2">
-            <button
-              onClick={handleStart}
-              disabled={!selectedId || loading}
+            <button onClick={handleStart} disabled={!selectedId || loading}
               className={`group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 ${
                 selectedId && !loading
                   ? "shadow-[0_16px_36px_rgba(124,58,237,0.28)] hover:-translate-y-0.5 hover:from-purple-700 hover:to-indigo-700 cursor-pointer"
@@ -240,14 +189,12 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
               {loading ? (
                 <>
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  {loadingLabel}
+                  Generating questions...
                 </>
               ) : selectedId ? (
                 <>
                   Start the Exam Now
-                  <span className="text-base transition-transform duration-200 group-hover:translate-x-0.5">
-                    →
-                  </span>
+                  <span className="text-base transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                 </>
               ) : (
                 "Please Select a Field First"

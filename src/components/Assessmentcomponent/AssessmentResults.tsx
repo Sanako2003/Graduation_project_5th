@@ -2,58 +2,94 @@
 
 import React from 'react';
 import { Icon } from '@iconify/react';
+import { Recommendation } from './QuizComponent';
 
-interface CourseResult {
-  rank: number; title: string; percentage: number;
-  iconName: string; courseHref: string;
+interface Props {
+  recommendations: Recommendation[];
+  onRetake: () => void;
 }
 
-interface Props { onRetake: () => void }
+// أيقونات افتراضية بناءً على الكلمات المفتاحية بالعنوان
+function getIcon(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes('python') || t.includes('data'))   return 'fluent-emoji:bar-chart';
+  if (t.includes('machine') || t.includes('ai') || t.includes('deep')) return 'fluent-emoji:brain';
+  if (t.includes('web') || t.includes('html') || t.includes('css'))    return 'fluent-emoji:globe-showing-americas';
+  if (t.includes('security') || t.includes('cyber'))                    return 'fluent-emoji:shield';
+  if (t.includes('cloud') || t.includes('network'))                     return 'fluent-emoji:cloud';
+  if (t.includes('java') || t.includes('swift') || t.includes('kotlin'))return 'fluent-emoji:laptop';
+  if (t.includes('product') || t.includes('management'))                return 'fluent-emoji:clipboard';
+  if (t.includes('design') || t.includes('ux'))                         return 'fluent-emoji:artist-palette';
+  return 'fluent-emoji:graduation-cap';
+}
 
-export default function AssessmentResults({ onRetake }: Props) {
-  const resultsData: CourseResult[] = [
-    { rank: 1, title: 'Artificial Intelligence',        percentage: 42, iconName: 'fluent-emoji:brain',                 courseHref: '/courses/101' },
-    { rank: 2, title: 'Cybersecurity',                  percentage: 41, iconName: 'fluent-emoji:shield',                courseHref: '/courses/102' },
-    { rank: 3, title: 'Technical Support & Systems',    percentage: 41, iconName: 'fluent-emoji:wrench',                courseHref: '/courses/102' },
-    { rank: 4, title: 'Technical Product Management',   percentage: 39, iconName: 'fluent-emoji:clipboard',             courseHref: '/courses/101' },
-    { rank: 5, title: 'Networks & Cloud Computing',     percentage: 32, iconName: 'fluent-emoji:cloud',                 courseHref: '/courses/102' },
-    { rank: 6, title: 'Software Engineering',           percentage: 30, iconName: 'fluent-emoji:building-construction', courseHref: '/courses/101' },
-  ];
+export default function AssessmentResults({ recommendations, onRetake }: Props) {
+  // لو ما في recommendations، اعرض رسالة
+  if (!recommendations || recommendations.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+        <div className="text-center space-y-4">
+          <Icon icon="fluent-emoji:thinking-face" className="w-16 h-16 mx-auto" />
+          <h2 className="text-2xl font-bold text-slate-900">No recommendations found</h2>
+          <p className="text-slate-500">Try retaking the assessment.</p>
+          <button onClick={onRetake}
+            className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors">
+            Retake Assessment
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-black text-slate-900 mb-2">Your Career Path</h1>
-          <p className="text-slate-500">Based on your assessment, these are the best fields for you.</p>
+          <p className="text-slate-500">Based on your assessment, these are the best courses for you.</p>
         </div>
 
         <div className="space-y-4">
-          {resultsData.map((course, index) => (
-            <div key={course.rank}
-              className={`group relative overflow-hidden bg-white rounded-3xl p-5 flex items-center gap-6 border transition-all duration-300 hover:shadow-xl hover:border-indigo-200 ${index === 0 ? 'border-indigo-500 shadow-indigo-100' : 'border-slate-100'}`}
-            >
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg ${index === 0 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                {course.rank}
-              </div>
-              <div className="flex items-center gap-4 flex-grow">
-                <Icon icon={course.iconName} className="w-8 h-8" />
-                <div>
-                  <h3 className="font-bold text-slate-900">{course.title}</h3>
-                  <div className="w-32 h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden">
-                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${course.percentage}%` }} />
+          {recommendations.map((rec, index) => {
+            const scorePercent = Math.round(rec.score * 100);
+            const icon = getIcon(rec.course_title);
+
+            return (
+              <div key={rec.rank}
+                className={`group relative overflow-hidden bg-white rounded-3xl p-5 flex items-center gap-6 border transition-all duration-300 hover:shadow-xl hover:border-indigo-200 ${
+                  index === 0 ? 'border-indigo-500 shadow-indigo-100' : 'border-slate-100'
+                }`}
+              >
+                {/* Rank */}
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg flex-shrink-0 ${
+                  index === 0 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {rec.rank}
+                </div>
+
+                {/* Icon + Title + Bar */}
+                <div className="flex items-center gap-4 flex-grow min-w-0">
+                  <Icon icon={icon} className="w-8 h-8 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-slate-900 truncate">{rec.course_title}</h3>
+                    <div className="w-32 h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                      <div className="h-full bg-indigo-500 rounded-full transition-all duration-700"
+                        style={{ width: `${scorePercent}%` }} />
+                    </div>
                   </div>
                 </div>
+
+                {/* Score + Button */}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <span className="font-black text-indigo-600 text-xl">{scorePercent}%</span>
+                  <a href={`/courses?q=${encodeURIComponent(rec.course_title)}`}
+                    className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-indigo-600 transition-colors whitespace-nowrap">
+                    View Course
+                  </a>
+                </div>
               </div>
-              <div className="flex items-center gap-6">
-                <span className="font-black text-indigo-600 text-xl">{course.percentage}%</span>
-                <a href={course.courseHref}
-                  className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-indigo-600 transition-colors">
-                  View Course
-                </a>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-10 text-center">

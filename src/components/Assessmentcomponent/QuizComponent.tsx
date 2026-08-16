@@ -3,10 +3,17 @@
 import React, { useState } from 'react';
 import SkillsAssessment, { Question } from './SkillsAssessment';
 import AssessmentResults from './AssessmentResults';
+import { generateQuiz, submitQuiz } from '@/lib/api';
 
 interface Step { id: number; label: string }
 
-type Phase = 'selection' | 'quiz' | 'results';
+type Phase = 'selection' | 'quiz' | 'submitting' | 'results';
+
+export interface Recommendation {
+  rank: number;
+  course_title: string;
+  score: number;
+}
 
 export default function QuizComponent() {
   const steps: Step[] = [
@@ -17,29 +24,62 @@ export default function QuizComponent() {
     { id: 5, label: 'Personality' },
   ];
 
-  const [phase, setPhase]                   = useState<Phase>('selection');
-  const [questions, setQuestions]           = useState<Question[]>([]);
-  const [quizTitle, setQuizTitle]           = useState('');
-  const [currentIndex, setCurrentIndex]     = useState(0);
-  const [answers, setAnswers]               = useState<Record<number, 'A' | 'B' | 'C' | 'D'>>({});
+  const [phase, setPhase]                       = useState<Phase>('selection');
+  const [questions, setQuestions]               = useState<Question[]>([]);
+  const [quizTitle, setQuizTitle]               = useState('');
+  const [attemptId, setAttemptId]               = useState<number | null>(null);
+  const [currentIndex, setCurrentIndex]         = useState(0);
+  const [answers, setAnswers]                   = useState<Record<number, number>>({}); // question_id -> option_id
+  const [recommendations, setRecommendations]   = useState<Recommendation[]>([]);
+  const [submitError, setSubmitError]           = useState('');
 
-  const handleQuizReady = (qs: Question[], title: string) => {
+  const handleQuizReady = (qs: Question[], title: string, aid: number) => {
     setQuestions(qs);
     setQuizTitle(title);
+    setAttemptId(aid);
     setCurrentIndex(0);
     setAnswers({});
     setPhase('quiz');
   };
 
-  const handleSelectOption = (optionId: 'A' | 'B' | 'C' | 'D') => {
-    setAnswers(prev => ({ ...prev, [currentIndex]: optionId }));
-    setTimeout(() => {
-      if (currentIndex < questions.length - 1) {
-        setCurrentIndex(prev => prev + 1);
-      } else {
-        setPhase('results');
-      }
-    }, 300);
+  const handleSelectOption = async (optionId: number, optionKey: 'A' | 'B' | 'C' | 'D') => {
+    const currentQuestion = questions[currentIndex];
+
+    // حفظ الإجابة: question_id -> option_id
+    const newAnswers = {
+      ...answers,
+      [currentQuestion.question_id]: optionId,
+    };
+    setAnswers(newAnswers);
+
+    await new Promise(r => setTimeout(r, 300));
+
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      // آخر سؤال — ابعت الأجوبة
+      await handleSubmit(newAnswers);
+    }
+  };
+
+  const handleSubmit = async (finalAnswers: Record<number, number>) => {
+    if (!attemptId) return;
+    setPhase('submitting');
+    setSubmitError('');
+
+    try {
+      const answersPayload = Object.entries(finalAnswers).map(([qId, oId]) => ({
+        question_id: parseInt(qId),
+        selected_option_id: oId,
+      }));
+
+      const result = await submitQuiz(attemptId, answersPayload);
+      setRecommendations(result.recommendations ?? []);
+      setPhase('results');
+    } catch (e: unknown) {
+      setSubmitError(e instanceof Error ? e.message : 'حدث خطأ غير متوقع');
+      setPhase('quiz');
+    }
   };
 
   const handleRestart = () => {
@@ -47,6 +87,9 @@ export default function QuizComponent() {
     setQuestions([]);
     setAnswers({});
     setCurrentIndex(0);
+    setAttemptId(null);
+    setRecommendations([]);
+    setSubmitError('');
   };
 
   // ---- SELECTION ----
@@ -54,17 +97,28 @@ export default function QuizComponent() {
     return <SkillsAssessment onQuizReady={handleQuizReady} />;
   }
 
+  // ---- SUBMITTING ----
+  if (phase === 'submitting') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <span className="h-12 w-12 animate-spin rounded-full border-4 border-purple-400 border-t-transparent mx-auto block" />
+          <p className="text-slate-600 font-medium">Analyzing your answers...</p>
+          <p className="text-slate-400 text-sm">Finding the best courses for you</p>
+        </div>
+      </div>
+    );
+  }
+
   // ---- RESULTS ----
   if (phase === 'results') {
-    return <AssessmentResults onRetake={handleRestart} />;
+    return <AssessmentResults recommendations={recommendations} onRetake={handleRestart} />;
   }
 
   // ---- QUIZ ----
   const currentQuestion = questions[currentIndex];
   const totalQuestions  = questions.length;
-
-  // activeStep بناءً على التقدم النسبي
-  const activeStepId = Math.ceil(((currentIndex + 1) / totalQuestions) * steps.length);
+  const activeStepId    = Math.ceil(((currentIndex + 1) / totalQuestions) * steps.length);
 
   return (
     <div className="min-h-screen bg-[#F4F5F9] p-4 md:p-8 flex items-center justify-center font-sans antialiased">
@@ -124,22 +178,28 @@ export default function QuizComponent() {
           </h2>
         </div>
 
+        {/* Submit Error */}
+        {submitError && (
+          <div className="max-w-3xl mx-auto mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm text-center">
+            {submitError}
+          </div>
+        )}
+
         {/* Options */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
           {currentQuestion.options.map((option) => {
-            const key = option.option_key;
-            const isSelected = answers[currentIndex] === key;
+            const isSelected = answers[currentQuestion.question_id] === option.option_id;
             return (
               <button
-                key={option.option_id || key}
-                onClick={() => handleSelectOption(key)}
+                key={option.option_id}
+                onClick={() => handleSelectOption(option.option_id, option.option_key)}
                 className={`group relative flex items-start text-left p-5 rounded-2xl border transition-all duration-300 outline-none ${
                   isSelected
                     ? 'bg-[#DCE7F9] border-[#A3BFFA] scale-[1.01] shadow-[0_6px_20px_rgba(59,130,246,0.1)]'
                     : 'bg-white border-gray-100 hover:border-gray-300 hover:shadow-[0_4px_15px_rgba(0,0,0,0.02)] active:scale-[0.99]'
                 }`}
               >
-                <span className="text-[#1E293B] font-bold text-sm md:text-base mr-3 mt-0.5 min-w-[18px]">{key}.</span>
+                <span className="text-[#1E293B] font-bold text-sm md:text-base mr-3 mt-0.5 min-w-[18px]">{option.option_key}.</span>
                 <p className="text-[#475569] text-xs md:text-sm leading-relaxed">{option.option_text}</p>
               </button>
             );
