@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Bell, Settings, User, Search, Menu, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
-const navLinks = [
+const baseNavLinks = [
   { href: "/", label: "Home" },
   { href: "/Assessment", label: "Assessment" },
   { href: "/courses", label: "Courses" },
@@ -23,7 +23,13 @@ export default function Navbar() {
   const router = useRouter();
   const { user, logout } = useAuth();
 
+  // زائر (مش مسجل دخول) ما يشوف رابط Profile إطلاقاً
+  const navLinks = user
+    ? baseNavLinks
+    : baseNavLinks.filter((link) => link.href !== "/profile");
+
   const handleLogout = async () => {
+    // ... باقي الكود متل ما هو، بدون أي تغيير
     const token = localStorage.getItem("token");
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {

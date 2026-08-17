@@ -25,11 +25,13 @@ export default function RecommendedCard({
       {/* 3D Icon Area */}
       <div className={`h-52 flex items-center justify-center bg-gradient-to-br ${colorFrom} ${colorTo} relative overflow-hidden`}>
         <div className="relative z-10 scale-110 group-hover:scale-125 transition-transform duration-500">
-          <img 
-            src={""} 
-            alt={title} 
-            className="w-40 h-40 object-contain drop-shadow-2xl"
-          />
+          {image !== "" && (
+              <img 
+                src={image} 
+                alt={title} 
+                className="w-40 h-40 object-contain drop-shadow-2xl" 
+              />
+            )}
         </div>
 
         {/* Checkmark badge (مثل الصورة) */}

@@ -30,8 +30,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? `${API_URL}/login` : `${API_URL}/users`;
-
+      const endpoint = isLogin ? `${API_URL}/login` : `${API_URL}/register`;
       const body = isLogin
         ? { email, password }
         : { name, email, password, role };
@@ -45,7 +44,6 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
       const data = await res.json();
 
       if (!res.ok) {
-        // Laravel validation errors format: { errors: { field: ["msg"] } }
         if (data.errors) {
           const firstError = Object.values(
             data.errors as Record<string, string[]>,
@@ -57,14 +55,16 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
         return;
       }
 
+      // ✅ هون مكان التعديل — بعد التأكد إنه الـ response تمام
       if (isLogin) {
-        // Update auth context and save token
         setUser(data.user);
         localStorage.setItem("token", data.token);
         router.push("/");
       } else {
-        // After register → go to login
-        router.push("/login");
+        // register رجع token مباشرة — سجل الدخول تلقائياً
+        setUser(data.user);
+        localStorage.setItem("token", data.token);
+        router.push("/");
       }
     } catch {
       setError("تعذّر الاتصال بالخادم، تحقق من تشغيل Laravel.");
