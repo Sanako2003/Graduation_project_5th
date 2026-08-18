@@ -139,3 +139,46 @@ export async function submitQuiz(
 
   return res.json();
 }
+// ── بيانات لوحة الطالب ──
+export type StudentDashboard = {
+  student: {
+    id: number;
+    name: string;
+    email: string;
+    avatar: string | null;
+    role: string;
+    track: string;
+    enrolledCourses: number;
+    completedCourses: number;
+    completionRate: number;
+    studyHours: number;
+  };
+  about: {
+    age: number | null;
+    educationLevel: string | null;
+    studyHours: number;
+    location: string | null;
+    github: string | null;
+    interests: string[];
+  };
+  courses: Array<{
+    id: number;
+    title: string;
+    progress: number;
+    status: "completed" | "in-progress" | "enrolled";
+    language?: string | null;
+    level?: string | null;
+  }>;
+  skills: Array<{ name: string; percentage: number; color?: string }>;
+  assessments: Array<{
+    id: number;
+    title: string;
+    date: string;
+    score: number;
+    color?: "purple" | "orange" | "green";
+  }>;
+};
+
+export async function getStudentDashboard() {
+  return apiFetch<StudentDashboard>("/student/dashboard");
+}

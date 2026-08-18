@@ -10,26 +10,30 @@ const baseNavLinks = [
   { href: "/Assessment", label: "Assessment" },
   { href: "/courses", label: "Courses" },
   { href: "/contact", label: "Contact us" },
-  { href: "/profile", label: "Profile" },
 ];
 
-type UserData = {
-  name: string;
-  email: string;
-  role?: string;
-};
+function getProfileLink(role?: string) {
+  switch (role) {
+    case "admin":
+      return { href: "/admin", label: "Dashboard" };
+    case "instructor":
+      return { href: "/admin_profial", label: "My Profile" };
+    default:
+      return { href: "/profile", label: "Profile" };
+  }
+}
 
 export default function Navbar() {
   const router = useRouter();
   const { user, logout } = useAuth();
 
-  // زائر (مش مسجل دخول) ما يشوف رابط Profile إطلاقاً
+  const profileLink = user ? getProfileLink(user.role) : null;
+
   const navLinks = user
-    ? baseNavLinks
-    : baseNavLinks.filter((link) => link.href !== "/profile");
+    ? [...baseNavLinks, profileLink!]
+    : baseNavLinks;
 
   const handleLogout = async () => {
-    // ... باقي الكود متل ما هو، بدون أي تغيير
     const token = localStorage.getItem("token");
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
@@ -108,11 +112,11 @@ export default function Navbar() {
 
             <div className="hidden sm:block w-px h-5 bg-slate-200 mx-1 flex-shrink-0" />
 
-            {/* Auth: إذا مسجل دخول → اسم + logout، إذا لأ → Login/Register */}
+            {/* Auth */}
             {user ? (
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link
-                  href="/profile"
+                  href={profileLink!.href}
                   className="flex items-center gap-3 group bg-slate-50 hover:bg-slate-100 p-1.5 pr-3 rounded-full border border-slate-200/40 transition-all duration-200"
                 >
                   <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">

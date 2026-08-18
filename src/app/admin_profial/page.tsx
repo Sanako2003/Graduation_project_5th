@@ -191,63 +191,81 @@ export default function InstructorProfilePage() {
       course.title.toLowerCase().includes(courseSearch.toLowerCase())
   );
 
-  useEffect(() => {
-    const controller = new AbortController();
+// استبدلي الـ useEffect بالكامل بهاد:
+useEffect(() => {
+  const controller = new AbortController();
 
-    async function loadInstructor() {
-      const token = localStorage.getItem("token") ?? localStorage.getItem("access_token");
-      if (!token) {
-        setError("Your session has expired. Please sign in again.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError("");
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api"}/instructor-profiles/${params.id}`,
-          {
-            headers: {
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            signal: controller.signal,
-          }
-        );
-
-        if (!response.ok) throw new Error(`Unable to load instructor (${response.status})`);
-
-        const payload = await response.json();
-        const profile = payload.data ?? payload;
-        const name = profile.user?.name ?? "Instructor";
-        setInstructor({
-          id: profile.id,
-          name,
-          email: profile.user?.email ?? "—",
-          initials: name.split(" ").map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
-          title: `${profile.specialization ?? "Professional"} Instructor`,
-          department: profile.specialization ?? "—",
-          location: "—",
-          joined: "—",
-          experience: `${profile.years_experience ?? 0} Years`,
-          rating: Number(profile.average_rating ?? 0),
-          students: 0,
-          teachingHours: 0,
-          bio: profile.bio ?? "No biography available.",
-        });
-      } catch (requestError) {
-        if ((requestError as Error).name !== "AbortError") {
-          setError((requestError as Error).message);
-        }
-      } finally {
-        setLoading(false);
-      }
+  async function loadInstructor() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Your session has expired. Please sign in again.");
+      setLoading(false);
+      return;
     }
 
-    if (params.id) loadInstructor();
-    return () => controller.abort();
-  }, [params.id]);
+    try {
+      setLoading(true);
+      setError("");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api"}/instructor/me`,
+        {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal,
+        }
+      );
+
+      if (!response.ok) throw new Error(`Unable to load instructor (${response.status})`);
+
+      const payload = await response.json();
+      const profile = payload.data ?? payload;
+      const name = profile.user?.name ?? "Instructor";
+
+      setInstructor({
+        id: profile.id,
+        name,
+        email: profile.user?.email ?? "—",
+        initials: name.split(" ").map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
+        title: `${profile.specialization ?? "Professional"} Instructor`,
+        department: profile.specialization ?? "—",
+        location: "—",
+        joined: "—",
+        experience: `${profile.years_experience ?? 0} Years`,
+        rating: Number(profile.average_rating ?? 0),
+        students: 0,
+        teachingHours: 0,
+        bio: profile.bio ?? "No biography available.",
+      });
+
+      // ✅ الكورسات الحقيقية من الـ API بدل initialCourses
+      const realCourses: Course[] = (profile.courses ?? []).map((c: any) => ({
+        id: c.id,
+        title: c.title,
+        category: c.domain?.name ?? "—",
+        level: c.level?.name ?? "—",
+        students: c.students_count ?? 0,
+        hours: Math.round((c.duration_minutes ?? 0) / 60),
+        lessons: c.modules?.length ?? 0,
+        rating: Number(c.average_rating ?? 0),
+        completion: 0, // مش موجود بالـ API حالياً
+        color: "from-violet-500 to-purple-600",
+        iconBg: "bg-violet-50 text-violet-600",
+      }));
+      setCourses(realCourses);
+    } catch (requestError) {
+      if ((requestError as Error).name !== "AbortError") {
+        setError((requestError as Error).message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadInstructor();
+  return () => controller.abort();
+}, []);
 
   function removeCourse(id: number) {
     setCourses((current) => current.filter((course) => course.id !== id));

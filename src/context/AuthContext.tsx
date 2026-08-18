@@ -26,13 +26,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setUser = (u: UserData | null) => {
     setUserState(u);
-    if (u) localStorage.setItem("user", JSON.stringify(u));
-    else localStorage.removeItem("user");
+    if (u) {
+      localStorage.setItem("user", JSON.stringify(u));
+      // نحط الـ user في cookie عشان الـ middleware يقدر يقراه
+      document.cookie = `user=${encodeURIComponent(JSON.stringify(u))}; path=/; max-age=${60 * 60 * 24 * 7}`;
+    } else {
+      localStorage.removeItem("user");
+      document.cookie = "user=; path=/; max-age=0";
+    }
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    document.cookie = "user=; path=/; max-age=0";
     setUserState(null);
   };
 

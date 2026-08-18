@@ -57,12 +57,18 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
 
       // ✅ هون مكان التعديل — بعد التأكد إنه الـ response تمام
       if (isLogin) {
-        setUser(data.user);
+        setUser({
+          ...data.user,
+          role: data.user.roles?.[0] ?? "student", // ناخد أول role من الـ array
+        });
         localStorage.setItem("token", data.token);
         router.push("/");
       } else {
         // register رجع token مباشرة — سجل الدخول تلقائياً
-        setUser(data.user);
+        setUser({
+           ...data.user,
+          role: data.user.roles?.[0] ?? "student", // ناخد أول role من الـ array
+        });
         localStorage.setItem("token", data.token);
         router.push("/");
       }

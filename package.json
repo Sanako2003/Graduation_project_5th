@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && start chrome http://localhost:3000\"",
+   "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "mock-api": "json-server --watch db.json --port 8000",
