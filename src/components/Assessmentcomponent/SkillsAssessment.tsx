@@ -98,7 +98,7 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-12 items-center">
 
         {/* ---- Categories ---- */}
-        <div className="relative flex flex-col gap-4 p-8 bg-gradient-to-b from-slate-50/80 to-white/40 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 min-h-[420px] justify-center">
+        <div className="relative p-8 bg-gradient-to-b from-slate-50/80 to-white/40 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50">
           <div className="absolute inset-0 bg-[radial-gradient(#c084fc_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.05] pointer-events-none rounded-3xl" />
 
           {loadingCats && (
@@ -114,25 +114,31 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
             </div>
           )}
 
-          {!loadingCats && !catsError && categories.map((cat, index) => {
-            const color = CARD_COLORS[index % CARD_COLORS.length];
-            const icon = cat.icon || FALLBACK_ICONS.default;
-            const selected = selectedId === cat.id;
-            return (
-              <div key={cat.id} onClick={() => setSelectedId(cat.id)}
-                className={`flex items-center justify-between p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-300 border-2 ${
-                  selected
-                    ? "border-purple-600 bg-white ring-4 ring-purple-100 scale-[1.03] shadow-md"
-                    : `border-white/40 hover:border-slate-300 hover:scale-[1.01] ${color.bg}`
-                }`}
-              >
-                <span className={`text-base font-bold tracking-wide ${selected ? "text-purple-700" : color.text}`}>
-                  {cat.name}
-                </span>
-                <Icon icon={icon} className={`w-8 h-8 transition-transform duration-300 ${selected ? "scale-110" : ""}`} />
+          {!loadingCats && !catsError && (
+            <div className="overflow-y-auto pr-2 max-h-[400px] scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-slate-100">
+              <div className="flex flex-col gap-3">
+                {categories.map((cat, index) => {
+                  const color = CARD_COLORS[index % CARD_COLORS.length];
+                  const icon = cat.icon || FALLBACK_ICONS.default;
+                  const selected = selectedId === cat.id;
+                  return (
+                    <div key={cat.id} onClick={() => setSelectedId(cat.id)}
+                      className={`flex items-center justify-between p-3 rounded-2xl shadow-sm cursor-pointer transition-all duration-300 border-2 ${
+                        selected
+                          ? "border-purple-600 bg-white ring-4 ring-purple-100 scale-[1.02] shadow-md"
+                          : `border-white/40 hover:border-slate-300 hover:scale-[1.01] ${color.bg}`
+                      }`}
+                    >
+                      <span className={`text-sm font-bold tracking-wide ${selected ? "text-purple-700" : color.text}`}>
+                        {cat.name}
+                      </span>
+                      <Icon icon={icon} className={`w-6 h-6 transition-transform duration-300 flex-shrink-0 ${selected ? "scale-110" : ""}`} />
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          )}
         </div>
 
         {/* ---- Text + Button ---- */}

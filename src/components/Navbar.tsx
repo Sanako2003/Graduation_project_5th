@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell, Settings, User, Search, Menu, LogOut } from "lucide-react";
@@ -26,6 +27,19 @@ function getProfileLink(role?: string) {
 export default function Navbar() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(`/courses?search=${encodeURIComponent(query)}`);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   const profileLink = user ? getProfileLink(user.role) : null;
 
@@ -89,11 +103,19 @@ export default function Navbar() {
           <div className="flex items-center gap-4 flex-1 justify-end max-w-2xl">
             {/* Search */}
             <div className="relative w-full max-w-xs hidden sm:block group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-purple-600 transition-colors duration-200 pointer-events-none">
+              <button
+                type="button"
+                onClick={handleSearch}
+                aria-label="Search"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-purple-600 transition-colors duration-200 hover:text-purple-600"
+              >
                 <Search size={18} />
-              </div>
+              </button>
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 placeholder="Search courses..."
                 className="w-full bg-slate-50 hover:bg-slate-50/80 pl-11 pr-4 py-2 rounded-full border border-slate-200/60 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-purple-400 focus:ring-4 focus:ring-purple-50 focus:outline-none transition-all duration-200"
               />

@@ -70,6 +70,22 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+/**
+ * بعض بيانات learning_outcomes جاية مدموجة ببعض بدون فراغ أو فاصلة
+ * (مثال: "...for text, code, image, audio, and videoExplain generative AI...")
+ * هاي الدالة بتفصلها لعدة نقاط منفصلة كحل مؤقت من الفرونت،
+ * لحد ما نصلّح المصدر بالداتابيس.
+ */
+function splitConcatenatedOutcome(raw: string): string[] {
+  if (!raw) return [];
+  // نحط فاصل عند أي مكان فيه حرف صغير أو رقم متبوع مباشرة بحرف كبير (يعني الفراغ أو النقطة ناقصين)
+  const withBoundaries = raw.replace(/([a-z0-9])([A-Z])/g, "$1|$2");
+  return withBoundaries
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function CourseDetailsClient({
@@ -182,21 +198,23 @@ export default function CourseDetailsClient({
                 <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-purple-600 pl-3 mb-4">
                   What you will learn
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {course.learning_outcomes.map((lo: LearningOutcome) => (
-                    <div
-                      key={lo.id}
-                      className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl"
-                    >
-                      <Icon
-                        icon="fluent:checkmark-circle-24-filled"
-                        className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5"
-                      />
-                      <p className="text-sm text-slate-600 font-medium">
-                        {lo.outcome}
-                      </p>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {course.learning_outcomes.flatMap((lo: LearningOutcome) =>
+                    splitConcatenatedOutcome(lo.outcome).map((point, idx) => (
+                      <div
+                        key={`${lo.id}-${idx}`}
+                        className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100"
+                      >
+                        <Icon
+                          icon="fluent:checkmark-circle-24-filled"
+                          className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5"
+                        />
+                        <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                          {point}
+                        </p>
+                      </div>
+                    )),
+                  )}
                 </div>
               </>
             )}

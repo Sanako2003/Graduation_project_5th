@@ -25,6 +25,7 @@ export default function CoursesPageClient() {
 
   const domainIdFromUrl = searchParams.get("domain_id") || "";
   const categoryFromUrl = searchParams.get("category") || "";
+  const searchFromUrl = searchParams.get("search") || "";
   const pageFromUrl = Number(searchParams.get("page") || "1");
 
   const [domains, setDomains] = useState<DomainOption[]>([]);
@@ -33,6 +34,8 @@ export default function CoursesPageClient() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeDomainId, setActiveDomainId] = useState<string>(domainIdFromUrl);
+  const [activeSearch, setActiveSearch] = useState<string>(searchFromUrl);
+  const [searchInput, setSearchInput] = useState<string>(searchFromUrl);
 
   useEffect(() => {
     async function loadDomains() {
@@ -48,7 +51,12 @@ export default function CoursesPageClient() {
   }, []);
 
   const loadCourses = useCallback(
-    async (targetPage: number, domainId: string, categoryName: string) => {
+    async (
+      targetPage: number,
+      domainId: string,
+      categoryName: string,
+      searchTerm: string,
+    ) => {
       setLoading(true);
       try {
         const perPage = 12;
@@ -61,6 +69,9 @@ export default function CoursesPageClient() {
           params.set("domain_id", domainId);
         } else if (categoryName) {
           params.set("category", categoryName);
+        }
+        if (searchTerm) {
+          params.set("search", searchTerm);
         }
 
         const data = await apiFetch<any>(`/courses?${params.toString()}`);
@@ -98,13 +109,16 @@ export default function CoursesPageClient() {
   useEffect(() => {
     const targetDomainId = domainIdFromUrl || findDomainIdByCategory(categoryFromUrl);
     setActiveDomainId(targetDomainId);
+    setActiveSearch(searchFromUrl);
+    setSearchInput(searchFromUrl);
     setPage(pageFromUrl);
-    loadCourses(pageFromUrl, targetDomainId, categoryFromUrl);
-  }, [categoryFromUrl, domainIdFromUrl, domains, pageFromUrl, loadCourses]);
+    loadCourses(pageFromUrl, targetDomainId, categoryFromUrl, searchFromUrl);
+  }, [categoryFromUrl, domainIdFromUrl, searchFromUrl, domains, pageFromUrl, loadCourses]);
 
   const handleDomainClick = (domainId: string) => {
     const params = new URLSearchParams();
     if (domainId) params.set("domain_id", domainId);
+    if (activeSearch) params.set("search", activeSearch);
     params.set("page", "1");
     router.push(`/courses?${params.toString()}`);
   };
@@ -112,13 +126,59 @@ export default function CoursesPageClient() {
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams();
     if (activeDomainId) params.set("domain_id", activeDomainId);
+    if (activeSearch) params.set("search", activeSearch);
     params.set("page", String(newPage));
     router.push(`/courses?${params.toString()}`);
   };
 
+  const handleSearchSubmit = () => {
+    const params = new URLSearchParams();
+    if (activeDomainId) params.set("domain_id", activeDomainId);
+    const trimmed = searchInput.trim();
+    if (trimmed) params.set("search", trimmed);
+    params.set("page", "1");
+    router.push(`/courses?${params.toString()}`);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    const params = new URLSearchParams();
+    if (activeDomainId) params.set("domain_id", activeDomainId);
+    params.set("page", "1");
+    router.push(`/courses?${params.toString()}`);
+  };
+
   return (
-    <section className="px-10 py-20">
+    <section className="px-10 py-10">
       <p className="mb-2 text-sm font-semibold text-purple-700">All Courses</p>
+
+      <div className="mb-6 flex justify-center">
+        <div className="relative w-full max-w-md">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="Search courses..."
+            className="w-full rounded-full border border-slate-200 bg-slate-50 px-5 py-2.5 pr-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-purple-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-purple-50"
+          />
+          {activeSearch && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-purple-600"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="mb-10 flex flex-wrap justify-center gap-4">
         <button
@@ -148,7 +208,9 @@ export default function CoursesPageClient() {
 
       {courses.length === 0 && !loading ? (
         <div className="text-center py-12 text-slate-500">
-          No courses available in this category.
+          {activeSearch
+            ? `No courses found for "${activeSearch}".`
+            : "No courses available in this category."}
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
