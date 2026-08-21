@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft, Mail, Globe, Linkedin, Star, Clock,
   BookOpen, Briefcase, User, Phone, MapPin, Calendar,
+  CheckCircle2, Activity, Target,
 } from "lucide-react";
 import { Github } from "lucide-react";
 
@@ -22,10 +23,59 @@ type InstructorProfile = {
   courses: Course[];
 };
 
+type StudentSummary = {
+  enrolled_courses: number;
+  active_courses: number;
+  completed_courses: number;
+  dropped_courses: number;
+  average_progress: number;
+  skills: number;
+  placement_attempts: number;
+};
+
+type StudentEnrollment = {
+  id: number;
+  enrolled_at: string | null;
+  status: "active" | "completed" | "dropped";
+  progress_percent: number;
+  course: {
+    id: number;
+    title: string;
+    url: string | null;
+    thumbnail: string | null;
+    language: string | null;
+    duration_minutes: number | null;
+    average_rating: number | null;
+    level: string | null;
+    domain: string | null;
+  };
+};
+
+type StudentSkill = {
+  id: number;
+  name: string;
+  current_score: number;
+  last_updated: string | null;
+};
+
+type PlacementAttempt = {
+  id: number;
+  category: string;
+  start_time: string | null;
+  end_time: string | null;
+  total_score: number;
+  known_syllabi_count: number;
+  status: string;
+};
+
 type StudentProfile = {
   id: number; phone: string | null; github_url: string | null;
   country: string | null; birth_date: string | null;
   user: { id: number; name: string; email: string; role: string };
+  summary: StudentSummary;
+  enrollments: StudentEnrollment[];
+  skills: StudentSkill[];
+  placement_attempts: PlacementAttempt[];
 };
 
 type ProfileData = InstructorProfile | StudentProfile;
@@ -39,6 +89,21 @@ function minutesToHours(min: number) {
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function formatDate(value: string | null) {
+  if (!value) return "—";
+  return new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(new Date(value));
+}
+
+function statusClasses(status: string) {
+  if (status === "completed") return "bg-emerald-100 text-emerald-700";
+  if (status === "dropped") return "bg-rose-100 text-rose-700";
+  return "bg-violet-100 text-violet-700";
 }
 
 function isInstructor(p: ProfileData): p is InstructorProfile {
@@ -57,7 +122,7 @@ export default function AdminProfileViewPage() {
 
   useEffect(() => {
     async function fetchProfile() {
-      const token = localStorage.getItem("token") ?? "";
+      const token = localStorage.getItem("token") ?? localStorage.getItem("access_token") ?? "";
       const headers = { Accept: "application/json", Authorization: `Bearer ${token}` };
       const endpoint = role === "student"
         ? `${API_URL}/student-profiles/${id}`
@@ -65,7 +130,10 @@ export default function AdminProfileViewPage() {
       try {
         setLoading(true);
         const res = await fetch(endpoint, { headers });
-        if (!res.ok) throw new Error("Profile not found");
+        if (!res.ok) {
+          const payload = await res.json().catch(() => null);
+          throw new Error(payload?.message ?? `Unable to load profile (${res.status})`);
+        }
         const json = await res.json();
         setProfile(json.data);
       } catch (e) {
@@ -99,6 +167,18 @@ export default function AdminProfileViewPage() {
 
   const instructor = isInstructor(profile) ? profile : null;
   const student = !isInstructor(profile) ? (profile as StudentProfile) : null;
+  const studentSummary = student?.summary ?? {
+    enrolled_courses: 0,
+    active_courses: 0,
+    completed_courses: 0,
+    dropped_courses: 0,
+    average_progress: 0,
+    skills: 0,
+    placement_attempts: 0,
+  };
+  const enrollments = student?.enrollments ?? [];
+  const studentSkills = student?.skills ?? [];
+  const placementAttempts = student?.placement_attempts ?? [];
   const uniqueCourses = instructor
     ? Array.from(new Map(instructor.courses.map((c) => [c.id, c])).values())
     : [];
@@ -191,6 +271,28 @@ export default function AdminProfileViewPage() {
           </div>
         )}
 
+        {/* Stats — student only */}
+        {student && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Enrolled Courses", value: studentSummary.enrolled_courses, icon: BookOpen, bg: "bg-violet-100", color: "text-violet-600" },
+              { label: "Completed", value: studentSummary.completed_courses, icon: CheckCircle2, bg: "bg-emerald-100", color: "text-emerald-600" },
+              { label: "Average Progress", value: `${studentSummary.average_progress}%`, icon: Activity, bg: "bg-blue-100", color: "text-blue-600" },
+              { label: "Placement Tests", value: studentSummary.placement_attempts, icon: Target, bg: "bg-fuchsia-100", color: "text-fuchsia-600" },
+            ].map(({ label, value, icon: Icon, bg, color }) => (
+              <div key={label} className="bg-white rounded-2xl shadow-md border border-white/60 p-5 flex items-center gap-4">
+                <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                  <Icon size={20} className={color} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-2xl font-extrabold text-slate-800">{value}</p>
+                  <p className="text-xs text-slate-400 font-medium truncate">{label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Courses — instructor only */}
         {instructor && uniqueCourses.length > 0 && (
           <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
@@ -218,6 +320,133 @@ export default function AdminProfileViewPage() {
                 </a>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Enrolled courses — student only */}
+        {student && (
+          <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
+            <div className="flex items-center justify-between gap-3 mb-5">
+              <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                <BookOpen size={18} className="text-violet-600" /> Enrolled Courses
+              </h2>
+              <span className="text-xs font-bold text-violet-700 bg-violet-100 px-3 py-1 rounded-full">
+                {enrollments.length} courses
+              </span>
+            </div>
+
+            {enrollments.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {enrollments.map((enrollment) => {
+                  const progress = Math.max(0, Math.min(100, enrollment.progress_percent ?? 0));
+                  return (
+                    <div key={enrollment.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-extrabold text-slate-800 line-clamp-2">{enrollment.course.title}</p>
+                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
+                            {enrollment.course.domain && <span>{enrollment.course.domain}</span>}
+                            {enrollment.course.level && <span>• {enrollment.course.level}</span>}
+                            {enrollment.course.language && <span>• {enrollment.course.language}</span>}
+                          </div>
+                        </div>
+                        <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold capitalize ${statusClasses(enrollment.status)}`}>
+                          {enrollment.status}
+                        </span>
+                      </div>
+
+                      <div className="mt-5">
+                        <div className="mb-2 flex items-center justify-between text-xs font-semibold">
+                          <span className="text-slate-400">Progress</span>
+                          <span className="text-violet-700">{progress}%</span>
+                        </div>
+                        <div className="h-2.5 overflow-hidden rounded-full bg-slate-200">
+                          <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500" style={{ width: `${progress}%` }} />
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex items-center justify-between text-xs text-slate-400">
+                        <span>Enrolled {formatDate(enrollment.enrolled_at)}</span>
+                        {enrollment.course.duration_minutes != null && (
+                          <span className="inline-flex items-center gap-1"><Clock size={11} /> {minutesToHours(enrollment.course.duration_minutes)}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+                This student is not enrolled in any courses yet.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Skills — student only */}
+        {student && (
+          <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
+            <h2 className="text-lg font-extrabold text-slate-800 mb-5 flex items-center gap-2">
+              <Activity size={18} className="text-blue-600" /> Skill Matrix
+            </h2>
+            {studentSkills.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {studentSkills.map((skill) => {
+                  const score = Math.max(0, Math.min(100, skill.current_score ?? 0));
+                  return (
+                    <div key={skill.id} className="rounded-2xl border border-slate-100 p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="truncate text-sm font-bold text-slate-700">{skill.name}</span>
+                        <span className="text-sm font-extrabold text-blue-600">{score}%</span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                        <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400" style={{ width: `${score}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+                No skill scores are available for this student yet.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Placement attempts — student only */}
+        {student && (
+          <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
+            <h2 className="text-lg font-extrabold text-slate-800 mb-5 flex items-center gap-2">
+              <Target size={18} className="text-fuchsia-600" /> Placement Test Attempts
+            </h2>
+            {placementAttempts.length > 0 ? (
+              <div className="space-y-3">
+                {placementAttempts.map((attempt) => (
+                  <div key={attempt.id} className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-bold text-slate-800">{attempt.category}</p>
+                      <p className="mt-1 text-xs text-slate-400">{formatDate(attempt.end_time ?? attempt.start_time)}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                        {attempt.known_syllabi_count} known topics
+                      </span>
+                      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
+                        Score: {attempt.total_score}
+                      </span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${attempt.status === "completed" ? "bg-emerald-100 text-emerald-700" : "bg-violet-100 text-violet-700"}`}>
+                        {attempt.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+                No placement test attempts are available for this student yet.
+              </div>
+            )}
           </div>
         )}
 

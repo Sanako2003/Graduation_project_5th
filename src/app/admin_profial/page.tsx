@@ -1,23 +1,15 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
 import {
-  ArrowLeft,
-  Award,
   BookOpen,
-  CalendarDays,
   Check,
   Clock3,
   GraduationCap,
   Mail,
-  MapPin,
   Plus,
   Search,
-  Star,
   Trash2,
-  TrendingUp,
   UserRound,
   Users,
   X,
@@ -32,13 +24,13 @@ type Course = {
   hours: number;
   lessons: number;
   rating: number;
-  completion: number;
   color: string;
   iconBg: string;
 };
 
 type Instructor = {
   id: number;
+  userId: number;
   name: string;
   email: string;
   initials: string;
@@ -53,125 +45,74 @@ type Instructor = {
   bio: string;
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api";
+
 const emptyInstructor: Instructor = {
   id: 0,
-  name: "Nasser Al-Subaie",
-  email: "nasser@example.com",
-  initials: "NS",
-  title: "Senior Software Instructor",
-  department: "Computer Science",
-  location: "Baghdad, Iraq",
-  joined: "September 2022",
-  experience: "8 Years",
-  rating: 4.9,
-  students: 1842,
-  teachingHours: 426,
-  bio: "Senior software instructor specialized in modern web development, software architecture, and JavaScript technologies. Passionate about turning complex engineering concepts into practical learning experiences.",
+  userId: 0,
+  name: "Instructor",
+  email: "—",
+  initials: "IN",
+  title: "Instructor",
+  department: "—",
+  location: "—",
+  joined: "—",
+  experience: "0 Years",
+  rating: 0,
+  students: 0,
+  teachingHours: 0,
+  bio: "No biography available.",
 };
 
-const initialCourses: Course[] = [
-  {
-    id: 1,
-    title: "Advanced JavaScript",
-    category: "Web Development",
-    level: "Advanced",
-    students: 642,
-    hours: 38,
-    lessons: 42,
-    rating: 4.9,
-    completion: 84,
-    color: "from-violet-500 to-purple-600",
-    iconBg: "bg-violet-50 text-violet-600",
-  },
-  {
-    id: 2,
-    title: "React & Next.js",
-    category: "Frontend Development",
-    level: "Intermediate",
-    students: 487,
-    hours: 46,
-    lessons: 54,
-    rating: 4.8,
-    completion: 72,
-    color: "from-cyan-500 to-blue-600",
-    iconBg: "bg-cyan-50 text-cyan-600",
-  },
-  {
-    id: 3,
-    title: "Node.js Fundamentals",
-    category: "Backend Development",
-    level: "Beginner",
-    students: 395,
-    hours: 32,
-    lessons: 36,
-    rating: 4.7,
-    completion: 91,
-    color: "from-emerald-500 to-teal-600",
-    iconBg: "bg-emerald-50 text-emerald-600",
-  },
-  {
-    id: 4,
-    title: "Software Architecture",
-    category: "Software Engineering",
-    level: "Advanced",
-    students: 318,
-    hours: 51,
-    lessons: 48,
-    rating: 4.9,
-    completion: 68,
-    color: "from-orange-500 to-rose-500",
-    iconBg: "bg-orange-50 text-orange-600",
-  },
+const courseStyles = [
+  ["from-violet-500 to-purple-600", "bg-violet-50 text-violet-600"],
+  ["from-cyan-500 to-blue-600", "bg-cyan-50 text-cyan-600"],
+  ["from-emerald-500 to-teal-600", "bg-emerald-50 text-emerald-600"],
+  ["from-orange-500 to-rose-500", "bg-orange-50 text-orange-600"],
 ];
 
-const availableCourses: Course[] = [
-  {
-    id: 5,
-    title: "TypeScript Masterclass",
-    category: "Web Development",
-    level: "Intermediate",
-    students: 0,
-    hours: 35,
-    lessons: 38,
-    rating: 0,
-    completion: 0,
-    color: "from-blue-500 to-indigo-600",
-    iconBg: "bg-blue-50 text-blue-600",
-  },
-  {
-    id: 6,
-    title: "REST API Development",
-    category: "Backend Development",
-    level: "Intermediate",
-    students: 0,
-    hours: 29,
-    lessons: 31,
-    rating: 0,
-    completion: 0,
-    color: "from-pink-500 to-fuchsia-600",
-    iconBg: "bg-pink-50 text-pink-600",
-  },
-  {
-    id: 7,
-    title: "Database Design",
-    category: "Database",
-    level: "Beginner",
-    students: 0,
-    hours: 40,
-    lessons: 45,
-    rating: 0,
-    completion: 0,
-    color: "from-amber-500 to-orange-600",
-    iconBg: "bg-amber-50 text-amber-600",
-  },
-];
+function mapCourse(course: any): Course {
+  const style = courseStyles[Number(course.id ?? 0) % courseStyles.length];
+
+  return {
+    id: Number(course.id),
+    title: course.title ?? "Untitled course",
+    category: course.domain?.name ?? "—",
+    level: course.level?.name ?? "—",
+    students: Number(course.students_count ?? 0),
+    hours: Math.round(Number(course.duration_minutes ?? 0) / 60),
+    lessons: Number(course.modules_count ?? course.modules?.length ?? 0),
+    rating: Number(course.average_rating ?? 0),
+    color: style[0],
+    iconBg: style[1],
+  };
+}
+
+function getHeaders(withJson = false): Record<string, string> {
+  const token = localStorage.getItem("token") ?? localStorage.getItem("access_token") ?? "";
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
+  if (withJson) headers["Content-Type"] = "application/json";
+  return headers;
+}
+
+async function readError(response: Response) {
+  const payload = await response.json().catch(() => null);
+  return payload?.message ?? `Request failed (${response.status})`;
+}
 
 export default function InstructorProfilePage() {
-  const params = useParams<{ id: string }>();
   const [instructor, setInstructor] = useState<Instructor>(emptyInstructor);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [actionError, setActionError] = useState("");
+  const [actionLoading, setActionLoading] = useState("");
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
+  const [availableLoading, setAvailableLoading] = useState(false);
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [courseSearch, setCourseSearch] = useState("");
 
@@ -180,105 +121,175 @@ export default function InstructorProfilePage() {
     [courses]
   );
 
-  const totalHours = useMemo(
-    () => courses.reduce((sum, course) => sum + course.hours, 0),
-    [courses]
+  const remainingCourses = useMemo(
+    () => availableCourses.filter(
+      (course) => !courses.some((assigned) => assigned.id === course.id)
+    ),
+    [availableCourses, courses]
   );
 
-  const remainingCourses = availableCourses.filter(
-    (course) =>
-      !courses.some((assigned) => assigned.id === course.id) &&
-      course.title.toLowerCase().includes(courseSearch.toLowerCase())
-  );
+  useEffect(() => {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflowY = "auto";
 
-// استبدلي الـ useEffect بالكامل بهاد:
-useEffect(() => {
-  const controller = new AbortController();
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflowY = "";
+    };
+  }, []);
 
-  async function loadInstructor() {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Your session has expired. Please sign in again.");
-      setLoading(false);
-      return;
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadInstructor() {
+      const token = localStorage.getItem("token") ?? localStorage.getItem("access_token");
+      if (!token) {
+        setError("Your session has expired. Please sign in again.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError("");
+        const response = await fetch(`${API_URL}/instructor/me`, {
+          headers: getHeaders(),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) throw new Error(await readError(response));
+
+        const payload = await response.json();
+        const profile = payload.data ?? payload;
+        const name = profile.user?.name ?? "Instructor";
+        const realCourses = (profile.courses ?? []).map(mapCourse);
+
+        setInstructor({
+          id: Number(profile.id),
+          userId: Number(profile.user?.id),
+          name,
+          email: profile.user?.email ?? "—",
+          initials: name.split(" ").map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
+          title: `${profile.specialization ?? "Professional"} Instructor`,
+          department: profile.specialization ?? "—",
+          location: "—",
+          joined: "—",
+          experience: `${profile.years_experience ?? 0} Years`,
+          rating: Number(profile.average_rating ?? 0),
+          students: realCourses.reduce((sum: number, course: Course) => sum + course.students, 0),
+          teachingHours: realCourses.reduce((sum: number, course: Course) => sum + course.hours, 0),
+          bio: profile.bio ?? "No biography available.",
+        });
+        setCourses(realCourses);
+      } catch (requestError) {
+        if ((requestError as Error).name !== "AbortError") {
+          setError((requestError as Error).message);
+        }
+      } finally {
+        setLoading(false);
+      }
     }
 
-    try {
-      setLoading(true);
-      setError("");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api"}/instructor/me`,
-        {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+    loadInstructor();
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!showAddCourse) return;
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        setAvailableLoading(true);
+        setActionError("");
+        const query = new URLSearchParams({
+          per_page: "50",
+          sort: "title",
+        });
+        if (courseSearch.trim()) query.set("search", courseSearch.trim());
+
+        const response = await fetch(`${API_URL}/courses?${query.toString()}`, {
+          headers: getHeaders(),
           signal: controller.signal,
+        });
+
+        if (!response.ok) throw new Error(await readError(response));
+        const payload = await response.json();
+        setAvailableCourses((payload.data ?? []).map(mapCourse));
+      } catch (requestError) {
+        if ((requestError as Error).name !== "AbortError") {
+          setActionError((requestError as Error).message);
         }
+      } finally {
+        setAvailableLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [showAddCourse, courseSearch]);
+
+  useEffect(() => {
+    if (!showAddCourse) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [showAddCourse]);
+
+  async function removeCourse(course: Course) {
+    try {
+      setActionLoading(`remove-${course.id}`);
+      setActionError("");
+      const response = await fetch(
+        `${API_URL}/course-instructors/${course.id}/${instructor.userId}`,
+        { method: "DELETE", headers: getHeaders() }
       );
 
-      if (!response.ok) throw new Error(`Unable to load instructor (${response.status})`);
-
-      const payload = await response.json();
-      const profile = payload.data ?? payload;
-      const name = profile.user?.name ?? "Instructor";
-
-      setInstructor({
-        id: profile.id,
-        name,
-        email: profile.user?.email ?? "—",
-        initials: name.split(" ").map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
-        title: `${profile.specialization ?? "Professional"} Instructor`,
-        department: profile.specialization ?? "—",
-        location: "—",
-        joined: "—",
-        experience: `${profile.years_experience ?? 0} Years`,
-        rating: Number(profile.average_rating ?? 0),
-        students: 0,
-        teachingHours: 0,
-        bio: profile.bio ?? "No biography available.",
-      });
-
-      // ✅ الكورسات الحقيقية من الـ API بدل initialCourses
-      const realCourses: Course[] = (profile.courses ?? []).map((c: any) => ({
-        id: c.id,
-        title: c.title,
-        category: c.domain?.name ?? "—",
-        level: c.level?.name ?? "—",
-        students: c.students_count ?? 0,
-        hours: Math.round((c.duration_minutes ?? 0) / 60),
-        lessons: c.modules?.length ?? 0,
-        rating: Number(c.average_rating ?? 0),
-        completion: 0, // مش موجود بالـ API حالياً
-        color: "from-violet-500 to-purple-600",
-        iconBg: "bg-violet-50 text-violet-600",
-      }));
-      setCourses(realCourses);
+      if (!response.ok) throw new Error(await readError(response));
+      setCourses((current) => current.filter((item) => item.id !== course.id));
+      setAvailableCourses((current) => [course, ...current]);
     } catch (requestError) {
-      if ((requestError as Error).name !== "AbortError") {
-        setError((requestError as Error).message);
-      }
+      setActionError((requestError as Error).message);
     } finally {
-      setLoading(false);
+      setActionLoading("");
     }
   }
 
-  loadInstructor();
-  return () => controller.abort();
-}, []);
+  async function addCourse(course: Course) {
+    try {
+      setActionLoading(`add-${course.id}`);
+      setActionError("");
+      const response = await fetch(`${API_URL}/course-instructors`, {
+        method: "POST",
+        headers: getHeaders(true),
+        body: JSON.stringify({
+          course_id: course.id,
+          user_id: instructor.userId,
+        }),
+      });
 
-  function removeCourse(id: number) {
-    setCourses((current) => current.filter((course) => course.id !== id));
-  }
-
-  function addCourse(course: Course) {
-    setCourses((current) => [...current, course]);
+      if (!response.ok) throw new Error(await readError(response));
+      setCourses((current) => current.some((item) => item.id === course.id)
+        ? current
+        : [...current, course]);
+      setAvailableCourses((current) => current.filter((item) => item.id !== course.id));
+    } catch (requestError) {
+      setActionError((requestError as Error).message);
+    } finally {
+      setActionLoading("");
+    }
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F4F7FB] pb-20 font-sans text-slate-800">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#F4F7FB] pb-20 font-sans text-slate-800">
       {loading && <div className="fixed inset-0 z-[200] grid place-items-center bg-white/70 text-violet-700 font-bold backdrop-blur-sm">Loading instructor profile...</div>}
       {error && <div className="relative z-[201] mx-auto mt-4 max-w-3xl rounded-2xl bg-rose-50 px-5 py-4 text-center font-semibold text-rose-700">{error}</div>}
+      {actionError && !showAddCourse && <div className="relative z-[201] mx-auto mt-4 max-w-3xl rounded-2xl bg-rose-50 px-5 py-4 text-center font-semibold text-rose-700">{actionError}</div>}
       {/* Background animation */}
       <style
         dangerouslySetInnerHTML={{
@@ -429,8 +440,8 @@ useEffect(() => {
           />
 
           <StatCard
-            icon={Users}
-            label="Total Students"
+          icon={Users}
+            label="Course Enrollments"
             value={totalStudents.toLocaleString()}
             iconClass="bg-cyan-100 text-cyan-600"
           />
@@ -528,7 +539,8 @@ useEffect(() => {
                 <CourseManagementCard
                   key={course.id}
                   course={course}
-                  onRemove={() => removeCourse(course.id)}
+                  removing={actionLoading === `remove-${course.id}`}
+                  onRemove={() => removeCourse(course)}
                 />
               ))}
             </div>
@@ -608,9 +620,17 @@ useEffect(() => {
               />
             </div>
 
+            {actionError && (
+              <div className="mx-6 mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+                {actionError}
+              </div>
+            )}
+
             {/* Available Courses */}
             <div className="max-h-[420px] overflow-y-auto p-6">
-              {remainingCourses.length > 0 ? (
+              {availableLoading ? (
+                <div className="py-10 text-center text-sm font-semibold text-violet-600">Loading courses...</div>
+              ) : remainingCourses.length > 0 ? (
                 <div className="space-y-3">
                   {remainingCourses.map((course) => (
                     <div
@@ -634,11 +654,12 @@ useEffect(() => {
                       </div>
 
                       <button
+                        disabled={actionLoading === `add-${course.id}`}
                         onClick={() => addCourse(course)}
-                        className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-violet-700"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-violet-700 disabled:opacity-50"
                       >
                         <Plus size={15} />
-                        Assign
+                        {actionLoading === `add-${course.id}` ? "Assigning..." : "Assign"}
                       </button>
                     </div>
                   ))}
@@ -729,9 +750,11 @@ function Detail({
 function CourseManagementCard({
   course,
   onRemove,
+  removing,
 }: {
   course: Course;
   onRemove: () => void;
+  removing: boolean;
 }) {
   return (
     <article className="group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-xl shadow-violet-100/40 backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:shadow-2xl">
@@ -760,9 +783,10 @@ function CourseManagementCard({
         </div>
 
         <button
+          disabled={removing}
           onClick={onRemove}
           title="Remove course"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 opacity-100 transition hover:bg-rose-500 hover:text-white lg:opacity-0 lg:group-hover:opacity-100"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 opacity-100 transition hover:bg-rose-500 hover:text-white disabled:opacity-40 lg:opacity-0 lg:group-hover:opacity-100"
         >
           <Trash2 size={17} />
         </button>
@@ -785,7 +809,7 @@ function CourseManagementCard({
         <CourseMetric
           icon={BookOpen}
           value={course.lessons.toString()}
-          label="Lessons"
+          label="Modules"
         />
       </div>
 
@@ -797,27 +821,6 @@ function CourseManagementCard({
 {/*  */}
       </div>
 
-      {/* Progress */}
-      {course.students > 0 && (
-        <div className="mt-5">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">
-              Average completion
-            </span>
-
-            <span className="text-xs font-black text-slate-600">
-              {course.completion}%
-            </span>
-          </div>
-
-          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-            <div
-              className={`h-full rounded-full bg-gradient-to-r ${course.color}`}
-              style={{ width: `${course.completion}%` }}
-            />
-          </div>
-        </div>
-      )}
     </article>
   );
 }

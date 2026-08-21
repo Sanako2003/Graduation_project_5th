@@ -4,10 +4,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Users,
-  Monitor,
   BookOpen,
   GraduationCap,
-  Plus,
   Trash2,
   ArrowLeft,
   User,
@@ -18,18 +16,17 @@ import {
   UserCheck,
 } from "lucide-react";
 
-const stats = [
-  { title: "Total Users", value: "3,042", icon: Users, color: "bg-violet-500" },
-  { title: "Courses", value: "128", icon: BookOpen, color: "bg-teal-400" },
-  { title: "Boards", value: "186", icon: Monitor, color: "bg-blue-400" },
-  { title: "Active Members", value: "2,856", icon: GraduationCap, color: "bg-fuchsia-400" },
-];
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api";
 
-const infoCards = [
-  { title: "Choices", value: "74", desc: "Available selections", icon: CheckCircle2, color: "bg-rose-400" },
-  { title: "Registered", value: "1,972", desc: "In active courses", icon: User, color: "bg-amber-400" },
-  { title: "Students Enrolled", value: "884", desc: "Currently studying", icon: School, color: "bg-emerald-400" },
-];
+type DashboardStats = {
+  total_users: number;
+  courses: number;
+  instructors: number;
+  students: number;
+  categories: number;
+  total_enrollments: number;
+  active_enrollments: number;
+};
 
 type FullStudent = {
   id: number;
@@ -38,12 +35,13 @@ type FullStudent = {
   email: string;
   initials: string;
   color: string;
-  class: string;
+  country: string;
   status: 'Active' | 'Inactive';
 };
 
 type InstructorItem = {
   id: number;
+  userId: number;
   name: string;
   email: string;
   status: string;
@@ -52,51 +50,53 @@ type InstructorItem = {
   time: string;
 };
 
-const initialAllStudents = [
-  { name: "Fatima Alzahra", email: "fatima@example.com", initials: "FZ", color: "bg-violet-200 text-violet-800 border-violet-200", class: "Web Development", status: "Active" },
-  { name: "Mohammed Ali", email: "mohammed@example.com", initials: "MA", color: "bg-purple-200 text-purple-800 border-purple-200", class: "Data Science", status: "Active" },
-  { name: "Yousef Khalid", email: "yousef@example.com", initials: "YK", color: "bg-emerald-200 text-emerald-800 border-emerald-200", class: "Mobile Apps", status: "Active" },
-  { name: "Nourhan Mostafa", email: "nourhah@example.com", initials: "NM", color: "bg-orange-200 text-orange-800 border-orange-200", class: "AI & ML", status: "Active" },
-  { name: "Khalid Ali", email: "khalid.a@example.com", initials: "HA", color: "bg-pink-200 text-pink-800 border-pink-200", class: "Web Development", status: "Inactive" },
-  { name: "Zainab Ahmed", email: "zainab.a@example.com", initials: "ZA", color: "bg-yellow-200 text-yellow-800 border-yellow-200", class: "UI/UX", status: "Active" },
-  { name: "Omar Yousef", email: "omar.y@example.com", initials: "MA", color: "bg-blue-200 text-blue-800 border-blue-200", class: "Backend", status: "Active" },
-  { name: "Sarah Ahmed", email: "sara@example.com", initials: "SA", color: "bg-rose-200 text-rose-800 border-rose-200", class: "Web Development", status: "Active" },
-  { name: "Nour Mustafa", email: "nour@example.com", initials: "NM", color: "bg-emerald-200 text-emerald-800 border-emerald-200", class: "Data Science", status: "Inactive" },
-];
-
-const initialTeachers = [
-  { name: "Nasser Al-Sampli", email: "nasser@example.com", status: "Instructor", initials: "NS", color: "bg-violet-200 text-violet-700" },
-  { name: "Aly Hariri", email: "ali@example.com", status: "Instructor", initials: "AH", color: "bg-amber-200 text-amber-700" },
-  { name: "Abdullah Al-Khatibi", email: "abdullah@example.com", status: "Instructor", initials: "AQ", color: "bg-rose-200 text-rose-700" },
-  { name: "Fouad Al-Shahri", email: "fouad@example.com", status: "Instructor", initials: "FS", color: "bg-emerald-200 text-emerald-700" },
-  { name: "Omar Al-Dosari", email: "omar@example.com", status: "Instructor", initials: "OD", color: "bg-blue-200 text-blue-700" },
-];
-
-const initialAllInstructorsFull = [
-  { name: "Nasser Al-Sebaie", email: "nasser@example.com", initials: "NS", color: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200", time: "10 min ago" },
-  { name: "Amal Al-Harbi", email: "amal@example.com", initials: "AH", color: "bg-blue-100 text-blue-800 border-blue-200", time: "20 min ago" },
-  { name: "Abdullah Al-Qahtani", email: "abdullah@example.com", initials: "AQ", color: "bg-violet-100 text-violet-800 border-violet-200", time: "1 hour ago" },
-  { name: "Fouzia Al-Shehri", email: "fouzia@example.com", initials: "FS", color: "bg-emerald-100 text-emerald-800 border-emerald-200", time: "2 hours ago" },
-  { name: "Omar Al-Dosari", email: "omar@example.com", initials: "OD", color: "bg-amber-100 text-amber-800 border-amber-200", time: "3 hours ago" },
-];
-
 export default function AdminDashboardPage() {
   const [showInstructors, setShowInstructors] = useState(false);
   const [showStudents, setShowStudents] = useState(false);
   const [showAddStudent, setShowAddStudent] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<InstructorItem | null>(null);
+
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats>({
+    total_users: 0,
+    courses: 0,
+    instructors: 0,
+    students: 0,
+    categories: 0,
+    total_enrollments: 0,
+    active_enrollments: 0,
+  });
 
   const [allStudents, setAllStudents] = useState<FullStudent[]>([]);
   const [teachers, setTeachers] = useState<InstructorItem[]>([]);
   const [allInstructorsFull, setAllInstructorsFull] = useState<InstructorItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState("");
+  const [actionLoading, setActionLoading] = useState("");
+  const [instructorPage, setInstructorPage] = useState(1);
+  const [instructorLastPage, setInstructorLastPage] = useState(1);
 
   const [search, setSearch] = useState("");
-  const [filterClass, setFilterClass] = useState("All");
+  const [filterCountry, setFilterCountry] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
 
-  const [newStudent, setNewStudent] = useState({ name: "", email: "", class: "Web Development" });
+  const [newStudent, setNewStudent] = useState({ name: "", email: "", password: "" });
+
+  const getHeaders = (withJson = false): Record<string, string> => {
+    const token = localStorage.getItem("token") ?? localStorage.getItem("access_token");
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    if (withJson) headers["Content-Type"] = "application/json";
+
+    return headers;
+  };
+
+  const readError = async (response: Response) => {
+    const payload = await response.json().catch(() => null);
+    return payload?.message ?? `Request failed (${response.status})`;
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -109,27 +109,30 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api";
       const headers = { Accept: "application/json", Authorization: `Bearer ${token}` };
 
       try {
         setLoading(true);
         setApiError("");
-        const [instructorResponse, firstStudentResponse] = await Promise.all([
-          fetch(`${apiUrl}/instructor-profiles`, { headers, signal: controller.signal }),
-          fetch(`${apiUrl}/student-profiles?page=1`, { headers, signal: controller.signal }),
+        const [statsResponse, instructorResponse, firstStudentResponse] = await Promise.all([
+          fetch(`${API_URL}/admin/dashboard`, { headers, signal: controller.signal }),
+          fetch(`${API_URL}/instructor-profiles`, { headers, signal: controller.signal }),
+          fetch(`${API_URL}/student-profiles?page=1`, { headers, signal: controller.signal }),
         ]);
 
-        if (!instructorResponse.ok || !firstStudentResponse.ok) {
-          throw new Error(`Unable to load dashboard (${instructorResponse.status}/${firstStudentResponse.status})`);
+        if (!statsResponse.ok || !instructorResponse.ok || !firstStudentResponse.ok) {
+          throw new Error(
+            `Unable to load dashboard (${statsResponse.status}/${instructorResponse.status}/${firstStudentResponse.status})`
+          );
         }
 
+        const statsPayload = await statsResponse.json();
         const instructorPayload = await instructorResponse.json();
         const firstStudentPayload = await firstStudentResponse.json();
         const lastPage = firstStudentPayload.meta?.last_page ?? 1;
         const remainingPages = await Promise.all(
           Array.from({ length: Math.max(0, lastPage - 1) }, (_, index) =>
-            fetch(`${apiUrl}/student-profiles?page=${index + 2}`, { headers, signal: controller.signal }).then((response) => {
+            fetch(`${API_URL}/student-profiles?page=${index + 2}`, { headers, signal: controller.signal }).then((response) => {
               if (!response.ok) throw new Error(`Unable to load students (${response.status})`);
               return response.json();
             })
@@ -140,6 +143,7 @@ export default function AdminDashboardPage() {
           const name = profile.user?.name ?? "Instructor";
           return {
             id: profile.id,
+            userId: profile.user?.id,
             name,
             email: profile.user?.email ?? "—",
             status: "Instructor",
@@ -159,13 +163,16 @@ export default function AdminDashboardPage() {
             email: profile.user?.email ?? "—",
             initials: name.split(" ").map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
             color: "bg-blue-100 text-blue-800 border-blue-200",
-            class: profile.country ?? "Unspecified",
-            status: "Active" as const,
+            country: profile.country ?? "Unspecified",
+            status: profile.user?.is_active ? "Active" as const : "Inactive" as const,
           };
         });
 
+        setDashboardStats(statsPayload.data);
         setTeachers(instructorItems.slice(0, 5));
         setAllInstructorsFull(instructorItems);
+        setInstructorPage(instructorPayload.meta?.current_page ?? 1);
+        setInstructorLastPage(instructorPayload.meta?.last_page ?? 1);
         setAllStudents(studentItems);
       } catch (requestError) {
         if ((requestError as Error).name !== "AbortError") setApiError((requestError as Error).message);
@@ -178,44 +185,122 @@ export default function AdminDashboardPage() {
     return () => controller.abort();
   }, []);
 
-  const promoteToInstructor = (student: FullStudent) => {
-    setAllStudents(prev => prev.filter(s => s.email !== student.email));
-    const newTeacher = {
-      id: student.id,
-      name: student.name,
-      email: student.email,
-      status: "Instructor",
-      initials: student.initials,
-      color: student.color,
-      time: "Just now",
-    };
-    const newFull = {
-      id: student.id,
-      name: student.name,
-      email: student.email,
-      status: "Instructor",
-      initials: student.initials,
-      color: student.color.replace('200','100'),
-      time: "Just now",
-    };
-    setTeachers(prev => [newTeacher, ...prev] );
-    setAllInstructorsFull(prev => [newFull, ...prev]);
+  const promoteToInstructor = async (student: FullStudent) => {
+    try {
+      setActionLoading(`promote-${student.userId}`);
+      setApiError("");
+
+      const response = await fetch(`${API_URL}/users/${student.userId}`, {
+        method: "PUT",
+        headers: getHeaders(true),
+        body: JSON.stringify({ role: "instructor" }),
+      });
+
+      if (!response.ok) throw new Error(await readError(response));
+
+      const payload = await response.json();
+      const user = payload.data ?? payload;
+      const instructor: InstructorItem = {
+        id: user.instructor_profile?.id ?? student.userId,
+        userId: student.userId,
+        name: student.name,
+        email: student.email,
+        status: "Instructor",
+        initials: student.initials,
+        color: "bg-violet-100 text-violet-800 border-violet-200",
+        time: "Just now",
+      };
+
+      setAllStudents(prev => prev.filter(item => item.userId !== student.userId));
+      setTeachers(prev => [instructor, ...prev].slice(0, 5));
+      setAllInstructorsFull(prev => [instructor, ...prev]);
+      setDashboardStats(prev => ({
+        ...prev,
+        students: Math.max(0, prev.students - 1),
+        instructors: prev.instructors + 1,
+      }));
+    } catch (error) {
+      setApiError((error as Error).message);
+    } finally {
+      setActionLoading("");
+    }
   };
 
-  const handleDeleteInstructor = (email: string) => {
-    setTeachers(prev => prev.filter(t => t.email !== email));
-    setAllInstructorsFull(prev => prev.filter(t => t.email !== email));
-    setConfirmDelete(null);
+  const handleDeleteInstructor = async (instructor: InstructorItem) => {
+    try {
+      setActionLoading(`delete-${instructor.userId}`);
+      setApiError("");
+
+      const response = await fetch(`${API_URL}/users/${instructor.userId}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) throw new Error(await readError(response));
+
+      setTeachers(prev => prev.filter(item => item.userId !== instructor.userId));
+      setAllInstructorsFull(prev => prev.filter(item => item.userId !== instructor.userId));
+      setDashboardStats(prev => ({
+        ...prev,
+        total_users: Math.max(0, prev.total_users - 1),
+        instructors: Math.max(0, prev.instructors - 1),
+      }));
+      setConfirmDelete(null);
+    } catch (error) {
+      setApiError((error as Error).message);
+    } finally {
+      setActionLoading("");
+    }
+  };
+
+  const loadInstructorPage = async (page: number) => {
+    try {
+      setActionLoading("instructor-page");
+      setApiError("");
+      const response = await fetch(`${API_URL}/instructor-profiles?page=${page}`, {
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) throw new Error(await readError(response));
+
+      const payload = await response.json();
+      const items: InstructorItem[] = (payload.data ?? []).map((profile: any) => {
+        const name = profile.user?.name ?? "Instructor";
+        return {
+          id: profile.id,
+          userId: profile.user?.id,
+          name,
+          email: profile.user?.email ?? "—",
+          status: "Instructor",
+          initials: name.split(" ").map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
+          color: "bg-violet-100 text-violet-800 border-violet-200",
+          time: `${profile.years_experience ?? 0} years experience`,
+        };
+      });
+
+      setAllInstructorsFull(items);
+      setInstructorPage(payload.meta?.current_page ?? page);
+      setInstructorLastPage(payload.meta?.last_page ?? 1);
+    } catch (error) {
+      setApiError((error as Error).message);
+    } finally {
+      setActionLoading("");
+    }
   };
 
   const filteredStudents = useMemo(() => {
     return allStudents.filter(s => {
       const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.email.toLowerCase().includes(search.toLowerCase());
-      const matchClass = filterClass === "All" || s.class === filterClass;
+      const matchCountry = filterCountry === "All" || s.country === filterCountry;
       const matchStatus = filterStatus === "All" || s.status === filterStatus;
-      return matchSearch && matchClass && matchStatus;
+      return matchSearch && matchCountry && matchStatus;
     });
-  }, [allStudents, search, filterClass, filterStatus]);
+  }, [allStudents, search, filterCountry, filterStatus]);
+
+  const countries = useMemo(
+    () => Array.from(new Set(allStudents.map(student => student.country))).sort(),
+    [allStudents]
+  );
 
   const latestStudents = allStudents.slice(0, 5);
 
@@ -227,15 +312,67 @@ export default function AdminDashboardPage() {
     return () => window.removeEventListener('keydown', onEsc);
   }, [showInstructors, showStudents, showAddStudent, confirmDelete]);
 
-  const handleAddStudent = () => {
-    if(!newStudent.name || !newStudent.email) return;
-    const initials = newStudent.name.split(" ").map(w=>w[0]).join("").substring(0,2).toUpperCase();
-    const colors = ["bg-violet-200 text-violet-800 border-violet-200","bg-blue-200 text-blue-800 border-blue-200","bg-emerald-200 text-emerald-800 border-emerald-200","bg-amber-200 text-amber-800 border-amber-200","bg-rose-200 text-rose-800 border-rose-200"];
-    const randomColor = colors[Math.floor(Math.random()*colors.length)];
-    setAllStudents(prev => [{ id: Date.now(), userId: Date.now(), name: newStudent.name, email: newStudent.email, initials, color: randomColor, class: newStudent.class, status: "Active" }, ...prev]);
-    setNewStudent({ name: "", email: "", class: "Web Development" });
-    setShowAddStudent(false);
+  const handleAddStudent = async () => {
+    if (!newStudent.name || !newStudent.email || newStudent.password.length < 8) return;
+
+    try {
+      setActionLoading("add-student");
+      setApiError("");
+      const response = await fetch(`${API_URL}/users`, {
+        method: "POST",
+        headers: getHeaders(true),
+        body: JSON.stringify({
+          name: newStudent.name,
+          email: newStudent.email,
+          password: newStudent.password,
+          role: "student",
+          is_active: true,
+        }),
+      });
+
+      if (!response.ok) throw new Error(await readError(response));
+
+      const payload = await response.json();
+      const user = payload.data ?? payload;
+      const name = user.name;
+      const student: FullStudent = {
+        id: user.student_profile?.id ?? user.id,
+        userId: user.id,
+        name,
+        email: user.email,
+        initials: name.split(" ").map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
+        color: "bg-blue-100 text-blue-800 border-blue-200",
+        country: user.student_profile?.country ?? "Unspecified",
+        status: user.is_active ? "Active" : "Inactive",
+      };
+
+      setAllStudents(prev => [student, ...prev]);
+      setDashboardStats(prev => ({
+        ...prev,
+        total_users: prev.total_users + 1,
+        students: prev.students + 1,
+      }));
+      setNewStudent({ name: "", email: "", password: "" });
+      setShowAddStudent(false);
+    } catch (error) {
+      setApiError((error as Error).message);
+    } finally {
+      setActionLoading("");
+    }
   };
+
+  const stats = [
+    { title: "Total Users", value: dashboardStats.total_users.toLocaleString(), icon: Users, color: "bg-violet-500" },
+    { title: "Courses", value: dashboardStats.courses.toLocaleString(), icon: BookOpen, color: "bg-teal-400" },
+    { title: "Instructors", value: dashboardStats.instructors.toLocaleString(), icon: UserCheck, color: "bg-blue-400" },
+    { title: "Students", value: dashboardStats.students.toLocaleString(), icon: GraduationCap, color: "bg-fuchsia-400" },
+  ];
+
+  const infoCards = [
+    { title: "Categories", value: dashboardStats.categories.toLocaleString(), desc: "Available learning categories", icon: CheckCircle2, color: "bg-rose-400" },
+    { title: "Total Enrollments", value: dashboardStats.total_enrollments.toLocaleString(), desc: "All course registrations", icon: User, color: "bg-amber-400" },
+    { title: "Active Enrollments", value: dashboardStats.active_enrollments.toLocaleString(), desc: "Currently studying", icon: School, color: "bg-emerald-400" },
+  ];
 
   return (
     <div dir="ltr" className="min-h-screen bg-[#F4F7FB] relative overflow-hidden font-sans text-slate-800">
@@ -316,7 +453,7 @@ export default function AdminDashboardPage() {
                   <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-700">Student</span>
                   <div className="flex items-center gap-1.5">
                     <button onClick={()=>setShowAddStudent(true)} className="rounded-xl bg-violet-600 px-3 py-2 text-xs font-bold text-white hover:bg-violet-700">+</button>
-                    <button onClick={()=>promoteToInstructor(s)} title="Promote to Instructor" className="rounded-xl bg-[#2E1A6B] px-2.5 py-2 text-white hover:bg-[#241555] transition shadow">
+                    <button disabled={actionLoading === `promote-${s.userId}`} onClick={()=>promoteToInstructor(s)} title="Promote to Instructor" className="rounded-xl bg-[#2E1A6B] px-2.5 py-2 text-white hover:bg-[#241555] transition shadow disabled:opacity-50">
                       <UserCheck size={14} />
                     </button>
                   </div>
@@ -337,7 +474,7 @@ export default function AdminDashboardPage() {
                 <div className={`flex h-10 w-10 items-center justify-center rounded-full text-xs font-extrabold ${t.color}`}>{t.initials}</div>
                 <div className="flex-1 min-w-0"><div className="font-bold truncate">{t.name}</div><div className="text-xs text-slate-400">{t.email}</div></div>
                 <span className="rounded-full bg-fuchsia-100 px-3 py-1 text-xs font-bold text-fuchsia-700">{t.status}</span>
-                <button onClick={()=>setConfirmDelete(t.email)} className="rounded-xl bg-rose-500 px-2 py-2 text-white hover:bg-rose-600"><Trash2 size={16} /></button>
+                <button onClick={()=>setConfirmDelete(t)} className="rounded-xl bg-rose-500 px-2 py-2 text-white hover:bg-rose-600"><Trash2 size={16} /></button>
               </div>
             ))}
             {teachers.length===0 && <div className="p-8 text-center text-sm text-slate-400">No instructors</div>}
@@ -356,13 +493,20 @@ export default function AdminDashboardPage() {
                 <div key={i} className="group flex items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3.5 hover:bg-[#F8F7FF] transition">
                   <span className="text-[12px] text-slate-600 font-medium whitespace-nowrap hidden md:block w-[85px]">{t.time}</span>
                   <span className="bg-[#EAF2FF] text-[#4A6FA5] text-[11px] font-bold px-2.5 py-1 rounded-full">Instructor</span>
-                  <button onClick={()=>setConfirmDelete(t.email)} className="w-9 h-9 flex items-center justify-center rounded-xl text-[#8B3A4A] hover:bg-rose-50 transition"><Trash2 size={18} /></button>
+                  <button onClick={()=>setConfirmDelete(t)} className="w-9 h-9 flex items-center justify-center rounded-xl text-[#8B3A4A] hover:bg-rose-50 transition"><Trash2 size={18} /></button>
                   <div className="flex-1 min-w-0 text-left"><div className="font-bold text-[14px] text-slate-800 truncate">{t.name}</div><div className="text-[12px] text-slate-400 truncate -mt-0.5">{t.email}</div></div>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-extrabold border-2 shadow-sm shrink-0 ${t.color}`}>{t.initials}</div>
                   <Link href={`/admin/profile/${t.id}?role=instructor`} className="bg-[#2E1A6B] hover:bg-[#241555] text-white text-[12px] font-bold px-3 sm:px-5 py-2.5 rounded-xl shadow-lg transition whitespace-nowrap">Go to Profile</Link>
                 </div>
               ))}
               {allInstructorsFull.length===0 && <div className="p-10 text-center text-slate-400">No instructors</div>}
+            </div>
+            <div className="flex items-center justify-between border-t px-8 py-4">
+              <span className="text-sm font-semibold text-slate-500">Page {instructorPage} of {instructorLastPage}</span>
+              <div className="flex gap-2">
+                <button disabled={instructorPage <= 1 || actionLoading === "instructor-page"} onClick={() => loadInstructorPage(instructorPage - 1)} className="rounded-xl border px-4 py-2 text-sm font-bold disabled:opacity-40">Previous</button>
+                <button disabled={instructorPage >= instructorLastPage || actionLoading === "instructor-page"} onClick={() => loadInstructorPage(instructorPage + 1)} className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-40">Next</button>
+              </div>
             </div>
           </div>
         </div>
@@ -385,9 +529,9 @@ export default function AdminDashboardPage() {
                 <button className="bg-[#6B5B8C] text-white px-6 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow"><Search size={18}/> Search</button>
               </div>
               <div className="flex gap-3 justify-end mt-4">
-                <select value={filterClass} onChange={e=>setFilterClass(e.target.value)} className="rounded-xl bg-[#E9E5EE] px-4 py-2 text-sm font-bold text-slate-700 border-0">
-                  <option value="All">Filter by Class: [All]</option>
-                  <option>Web Development</option><option>Data Science</option><option>UI/UX</option><option>Backend</option><option>Mobile Apps</option>
+                <select value={filterCountry} onChange={e=>setFilterCountry(e.target.value)} className="rounded-xl bg-[#E9E5EE] px-4 py-2 text-sm font-bold text-slate-700 border-0">
+                  <option value="All">Filter by Country: [All]</option>
+                  {countries.map(country => <option key={country} value={country}>{country}</option>)}
                 </select>
                 <select value={filterStatus} onChange={e=>setFilterStatus(e.target.value)} className="rounded-xl bg-[#E9E5EE] px-4 py-2 text-sm font-bold text-slate-700 border-0">
                   <option value="All">Filter by Status: [All]</option><option value="Active">Active</option><option value="Inactive">Inactive</option>
@@ -405,7 +549,7 @@ export default function AdminDashboardPage() {
               {filteredStudents.map((s,i)=>(
                 <div key={i} className="grid grid-cols-12 items-center py-3 px-2 sm:px-4 text-[13px] hover:bg-[#FAF8FF]">
                   <div className="col-span-3 flex justify-center">
-                    <button onClick={()=>promoteToInstructor(s)} className="bg-[#2E1A6B] text-white text-[11px] font-bold px-3 py-2 rounded-full flex items-center gap-1 hover:bg-[#241555]"><UserCheck size={12}/> Make Instructor</button>
+                    <button disabled={actionLoading === `promote-${s.userId}`} onClick={()=>promoteToInstructor(s)} className="bg-[#2E1A6B] text-white text-[11px] font-bold px-3 py-2 rounded-full flex items-center gap-1 hover:bg-[#241555] disabled:opacity-50"><UserCheck size={12}/> Make Instructor</button>
                   </div>
                   <div className="col-span-4 text-center truncate font-medium text-slate-700">{s.email}</div>
                   <div className="col-span-2 text-center font-bold text-slate-800 truncate">{s.name}</div>
@@ -433,15 +577,11 @@ export default function AdminDashboardPage() {
             <div className="space-y-4">
               <div><label className="text-sm font-bold text-slate-600">Full Name</label><input value={newStudent.name} onChange={e=>setNewStudent({...newStudent,name:e.target.value})} placeholder="e.g. Fatima Alzahra" className="mt-2 w-full rounded-xl border border-slate-200 bg-[#F9FAFF] px-4 py-3 text-sm focus:ring-2 focus:ring-violet-400 outline-none"/></div>
               <div><label className="text-sm font-bold text-slate-600">Email</label><input value={newStudent.email} onChange={e=>setNewStudent({...newStudent,email:e.target.value})} placeholder="e.g. fatima@example.com" className="mt-2 w-full rounded-xl border border-slate-200 bg-[#F9FAFF] px-4 py-3 text-sm focus:ring-2 focus:ring-violet-400 outline-none"/></div>
-              <div><label className="text-sm font-bold text-slate-600">Class</label>
-                <select value={newStudent.class} onChange={e=>setNewStudent({...newStudent,class:e.target.value})} className="mt-2 w-full rounded-xl border border-slate-200 bg-[#F9FAFF] px-4 py-3 text-sm">
-                  <option>Web Development</option><option>Data Science</option><option>UI/UX</option><option>Backend</option><option>Mobile Apps</option><option>AI & ML</option>
-                </select>
-              </div>
+              <div><label className="text-sm font-bold text-slate-600">Password</label><input type="password" minLength={8} value={newStudent.password} onChange={e=>setNewStudent({...newStudent,password:e.target.value})} placeholder="At least 8 characters" className="mt-2 w-full rounded-xl border border-slate-200 bg-[#F9FAFF] px-4 py-3 text-sm focus:ring-2 focus:ring-violet-400 outline-none"/></div>
             </div>
             <div className="flex gap-3 mt-8">
               <button onClick={()=>setShowAddStudent(false)} className="flex-1 rounded-xl border border-slate-200 py-3 text-sm font-bold">Cancel</button>
-              <button onClick={handleAddStudent} className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 text-sm font-bold shadow-lg hover:scale-[1.02] transition">Add Student +</button>
+              <button disabled={actionLoading === "add-student" || !newStudent.name || !newStudent.email || newStudent.password.length < 8} onClick={handleAddStudent} className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 text-sm font-bold shadow-lg hover:scale-[1.02] transition disabled:opacity-50">{actionLoading === "add-student" ? "Adding..." : "Add Student +"}</button>
             </div>
           </div>
         </div>
@@ -453,9 +593,9 @@ export default function AdminDashboardPage() {
           <div className="relative w-full max-w-[380px] bg-white rounded-[1.5rem] p-7 text-center shadow-2xl">
             <div className="w-14 h-14 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4"><Trash2/></div>
             <h3 className="font-extrabold text-lg">Delete this instructor?</h3>
-            <p className="text-sm text-slate-500 mt-1 break-all">{confirmDelete}</p>
+            <p className="text-sm text-slate-500 mt-1 break-all">{confirmDelete.email}</p>
             <p className="text-xs text-slate-400 mt-2">This action cannot be undone.</p>
-            <div className="flex gap-3 mt-6"><button onClick={()=>setConfirmDelete(null)} className="flex-1 rounded-xl border py-2.5 text-sm font-bold">Cancel</button><button onClick={()=>handleDeleteInstructor(confirmDelete)} className="flex-1 rounded-xl bg-rose-600 text-white py-2.5 text-sm font-bold">Delete</button></div>
+            <div className="flex gap-3 mt-6"><button onClick={()=>setConfirmDelete(null)} className="flex-1 rounded-xl border py-2.5 text-sm font-bold">Cancel</button><button disabled={actionLoading === `delete-${confirmDelete.userId}`} onClick={()=>handleDeleteInstructor(confirmDelete)} className="flex-1 rounded-xl bg-rose-600 text-white py-2.5 text-sm font-bold disabled:opacity-50">{actionLoading === `delete-${confirmDelete.userId}` ? "Deleting..." : "Delete"}</button></div>
           </div>
         </div>
       )}
