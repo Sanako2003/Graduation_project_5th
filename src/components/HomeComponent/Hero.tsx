@@ -59,7 +59,7 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   }, [isVisible, target]);
 
   return (
-    <div ref={countRef} className="text-3xl font-bold text-purple-600">
+    <div ref={countRef} className="text-3xl font-bold text-white">
       {count.toLocaleString()}{suffix}
     </div>
   );
@@ -88,30 +88,30 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative min-h-[90vh] flex items-center bg-gradient-to-br from-purple-50 via-white to-blue-50 overflow-hidden pt-30 pb-20">
+    <section className="relative min-h-[90vh] flex items-center bg-gradient-to-r from-violet-700 via-fuchsia-600 to-indigo-600 overflow-hidden pt-30 pb-20">
       {/* خلفية متحركة بسيطة */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -right-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-1/2 -left-1/2 w-[800px] h-[800px] bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute -top-1/2 -right-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-white/15 to-teal-200/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-1/2 -left-1/2 w-[800px] h-[800px] bg-gradient-to-br from-indigo-200/25 to-violet-100/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
       <div className="max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-16 items-center relative z-10">
         
         {/* النص الجانب الأيسر */}
         <div className="space-y-8 animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium animate-bounce-slow">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 text-white rounded-full text-sm font-medium ring-1 ring-white/25 animate-bounce-slow">
             <Sparkles className="w-4 h-4 animate-pulse" />
             <span>Start your journey today</span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tighter text-gray-900">
+          <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tighter text-white">
             Empower Your Career with{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 animate-gradient">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-violet-100 to-teal-200 animate-gradient">
               Practical Learning Paths
             </span>
           </h1>
 
-          <p className="text-xl text-gray-600 max-w-lg">
+          <p className="text-xl text-violet-100 max-w-lg">
             Flexible, affordable courses designed to help you achieve your goals, 
            at home, in the office, or anywhere in between.
           </p>
@@ -119,36 +119,36 @@ export default function Hero() {
 
          <div className="flex flex-wrap gap-4">
   {/* الزر الأساسي - Start Learning Free */}
-  <button className="group bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-2xl font-medium text-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95 flex items-center gap-2">
+  <button className="group bg-white text-violet-700 hover:bg-violet-50 px-8 py-4 rounded-2xl font-medium text-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95 flex items-center gap-2">
     Start Learning Free
     <Zap className="w-5 h-5 group-hover:animate-bounce" />
   </button>
   
   {/* الزر الثانوي - Watch 2-min Video */}
-  <button className="group border-2 border-gray-300 hover:border-purple-600 hover:bg-purple-50 px-8 py-4 rounded-2xl font-medium text-lg transition-all hover:scale-105 active:scale-95 flex items-center gap-3 bg-white">
-    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center group-hover:bg-purple-600 transition-colors">
-      <Play className="w-4 h-4 text-purple-600 group-hover:text-white transition-colors ml-0.5" />
+  <button className="group border-2 border-white/35 hover:border-white hover:bg-white/10 px-8 py-4 rounded-2xl font-medium text-lg transition-all hover:scale-105 active:scale-95 flex items-center gap-3 bg-white/10 backdrop-blur">
+    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center group-hover:bg-teal-500 transition-colors">
+      <Play className="w-4 h-4 text-violet-600 group-hover:text-white transition-colors ml-0.5" />
     </div>
-    <span className="text-gray-900 group-hover:text-purple-600 transition-colors">Watch 2-min Video</span>
+    <span className="text-white transition-colors">Watch 2-min Video</span>
   </button>
 </div>
           {/* إحصائيات */}
           <div className="flex gap-10 pt-6">
             <div className="group hover:-translate-y-1 transition-transform cursor-default">
               <AnimatedCounter target={50} suffix="k+" />
-              <p className="text-gray-500 flex items-center gap-1 group-hover:text-purple-600 transition-colors">
+              <p className="text-violet-100 flex items-center gap-1 group-hover:text-white transition-colors">
                 <Users className="w-4 h-4" /> Active Students
               </p>
             </div>
             <div className="group hover:-translate-y-1 transition-transform cursor-default">
               <AnimatedCounter target={450} suffix="+" />
-              <p className="text-gray-500 flex items-center gap-1 group-hover:text-purple-600 transition-colors">
+              <p className="text-violet-100 flex items-center gap-1 group-hover:text-white transition-colors">
                 <BookOpen className="w-4 h-4" /> Courses
               </p>
             </div>
             <div className="group hover:-translate-y-1 transition-transform cursor-default">
               <AnimatedCounter target={4} suffix=".9" />
-              <p className="text-gray-500 flex items-center gap-1 group-hover:text-purple-600 transition-colors">
+              <p className="text-violet-100 flex items-center gap-1 group-hover:text-white transition-colors">
                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" /> Average Rating
               </p>
             </div>
@@ -193,7 +193,7 @@ export default function Hero() {
           ))}
 
           {/* دائرة توهج */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-purple-300/30 to-pink-300/30 rounded-full blur-3xl -z-10 animate-pulse" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-white/20 to-teal-200/20 rounded-full blur-3xl -z-10 animate-pulse" />
         </div>
       </div>
 

@@ -79,10 +79,10 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="border-t bg-white px-10 py-16">
-      <div className="grid gap-10 text-sm text-gray-600 md:grid-cols-4">
+    <footer className="border-t border-white/10 bg-[#17122B] px-10 py-16 text-slate-300">
+      <div className="grid gap-10 text-sm text-slate-400 md:grid-cols-4">
         <div>
-          <h3 className="mb-3 font-bold text-gray-900">
+          <h3 className="mb-3 font-bold text-white">
             Popular Courses
           </h3>
 
@@ -93,7 +93,7 @@ export default function Footer() {
               <Link
                 key={course.id}
                 href={`/courses/${course.id}`}
-                className="mb-1 block transition-colors hover:text-purple-600"
+                className="mb-1 block transition-colors hover:text-violet-300"
               >
                 {course.title}
               </Link>
@@ -104,7 +104,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-3 font-bold text-gray-900">
+          <h3 className="mb-3 font-bold text-white">
             Domains
           </h3>
 
@@ -115,7 +115,7 @@ export default function Footer() {
               <Link
                 key={domain.id}
                 href={`/courses?domain_id=${domain.id}`}
-                className="mb-1 block transition-colors hover:text-purple-600"
+                className="mb-1 block transition-colors hover:text-violet-300"
               >
                 {domain.name}
               </Link>
@@ -126,40 +126,40 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-3 font-bold text-gray-900">
+          <h3 className="mb-3 font-bold text-white">
             About
           </h3>
 
           <Link
             href="/about"
-            className="mb-1 block transition-colors hover:text-purple-600"
+            className="mb-1 block transition-colors hover:text-violet-300"
           >
             About us
           </Link>
 
           <Link
             href="/careers"
-            className="mb-1 block transition-colors hover:text-purple-600"
+            className="mb-1 block transition-colors hover:text-violet-300"
           >
             Careers
           </Link>
         </div>
 
         <div>
-          <h3 className="mb-3 font-bold text-gray-900">
+          <h3 className="mb-3 font-bold text-white">
             Community
           </h3>
 
           <Link
             href="/forums"
-            className="mb-1 block transition-colors hover:text-purple-600"
+            className="mb-1 block transition-colors hover:text-violet-300"
           >
             Forums
           </Link>
 
           <Link
             href="/events"
-            className="mb-1 block transition-colors hover:text-purple-600"
+            className="mb-1 block transition-colors hover:text-violet-300"
           >
             Events
           </Link>

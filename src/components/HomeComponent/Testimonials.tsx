@@ -153,11 +153,11 @@ export default function Testimonials() {
   const visibleData = usingMock ? data.slice(0, 6) : data;
 
   return (
-    <section className="px-8 py-16 bg-white">
+    <section className="px-8 py-16 bg-[#EEE9FF]">
       {/* Header */}
       <div className="text-center mb-4">
-        <h2 className="text-3xl font-bold text-gray-900">What Our Learners Are Saying</h2>
-        <p className="text-gray-500 mt-2 text-sm max-w-xl mx-auto">
+        <h2 className="text-3xl font-bold text-[#172033]">What Our Learners Are Saying</h2>
+        <p className="text-slate-500 mt-2 text-sm max-w-xl mx-auto">
           Hear from students and professionals  transformed their careers and lives through our courses.
         </p>
       </div>
@@ -175,7 +175,7 @@ export default function Testimonials() {
           {visibleData.map((t, index) => (
             <div
               key={t.id}
-              className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
+              className="bg-white border border-[#E4DDF5] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
             >
               {/* Avatar + Name */}
               <div className="flex items-center gap-3 mb-3">
@@ -199,9 +199,9 @@ export default function Testimonials() {
                   />
                 )}
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm leading-tight">{t.name}</p>
+                  <p className="font-semibold text-[#172033] text-sm leading-tight">{t.name}</p>
                   {(t.location || t.role) && (
-                    <p className="text-xs text-gray-400">{t.location || t.role}</p>
+                    <p className="text-xs text-slate-400">{t.location || t.role}</p>
                   )}
                 </div>
               </div>
@@ -210,7 +210,7 @@ export default function Testimonials() {
               <StarRating />
 
               {/* Message */}
-              <p className="text-gray-600 text-sm leading-relaxed line-clamp-5">{t.message}</p>
+              <p className="text-slate-600 text-sm leading-relaxed line-clamp-5">{t.message}</p>
             </div>
           ))}
         </div>

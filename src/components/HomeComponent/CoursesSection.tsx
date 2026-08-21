@@ -66,10 +66,10 @@ export default function CoursesSection() {
   const pageNumbers = [page];
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-[#EEE9FF]">
       <div className="px-4 mx-auto max-w-7xl">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-3xl font-bold text-[#172033]">
             Our Popular Courses
           </h2>
         </div>
@@ -80,7 +80,7 @@ export default function CoursesSection() {
               <CourseCard key={course.id} course={course} />
             ))
           ) : (
-            <p className="col-span-full text-center text-gray-500 py-6">
+            <p className="col-span-full text-center text-slate-500 py-6">
               {loading ? "Loading courses..." : "No courses found."}
             </p>
           )}
@@ -90,7 +90,7 @@ export default function CoursesSection() {
           <button
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page <= 1 || loading}
-            className="rounded-full border px-4 py-2 text-sm font-semibold transition-all hover:bg-slate-100 disabled:opacity-50"
+            className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 transition-all hover:bg-violet-100 disabled:opacity-50"
           >
             Previous
           </button>
@@ -102,7 +102,7 @@ export default function CoursesSection() {
           <button
             onClick={() => setPage((prev) => prev + 1)}
             disabled={!hasMore || loading}
-            className="rounded-full border px-4 py-2 text-sm font-semibold transition-all hover:bg-slate-100 disabled:opacity-50"
+            className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 transition-all hover:bg-violet-100 disabled:opacity-50"
           >
             Next
           </button>

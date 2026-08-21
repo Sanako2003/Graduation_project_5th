@@ -155,8 +155,8 @@ export default function CoursesPageClient() {
   };
 
   return (
-    <section className="px-10 py-10">
-      <p className="mb-2 text-sm font-semibold text-purple-700">All Courses</p>
+    <section className="min-h-screen bg-[#F7F5FF] px-10 py-10">
+      <p className="mb-2 text-sm font-semibold text-violet-700">All Courses</p>
 
       <div className="mb-6 flex justify-center">
         <div className="relative w-full max-w-md">
@@ -166,13 +166,13 @@ export default function CoursesPageClient() {
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={handleSearchKeyDown}
             placeholder="Search courses..."
-            className="w-full rounded-full border border-slate-200 bg-slate-50 px-5 py-2.5 pr-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-purple-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-purple-50"
+            className="w-full rounded-full border border-[#E4DDF5] bg-white px-5 py-2.5 pr-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-violet-100"
           />
           {activeSearch && (
             <button
               type="button"
               onClick={handleClearSearch}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-purple-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-violet-600"
             >
               ✕
             </button>
@@ -185,8 +185,8 @@ export default function CoursesPageClient() {
           onClick={() => handleDomainClick("")}
           className={`rounded-full border px-4 py-2 text-sm font-medium transition-all ${
             !activeDomainId
-              ? "bg-purple-600 text-white border-purple-600 shadow-md"
-              : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+              ? "bg-violet-600 text-white border-violet-600 shadow-md"
+              : "bg-white text-slate-600 border-[#E4DDF5] hover:border-violet-300 hover:bg-violet-50"
           }`}
         >
           All
@@ -197,8 +197,8 @@ export default function CoursesPageClient() {
             onClick={() => handleDomainClick(String(domain.id))}
             className={`rounded-full border px-4 py-2 text-sm font-medium transition-all ${
               activeDomainId === String(domain.id)
-                ? "bg-purple-600 text-white border-purple-600 shadow-md"
-                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                ? "bg-violet-600 text-white border-violet-600 shadow-md"
+                : "bg-white text-slate-600 border-[#E4DDF5] hover:border-violet-300 hover:bg-violet-50"
             }`}
           >
             {domain.name}
@@ -224,7 +224,7 @@ export default function CoursesPageClient() {
         <button
           onClick={() => handlePageChange(Math.max(1, page - 1))}
           disabled={page <= 1 || loading}
-          className="rounded-full border px-4 py-2 text-sm font-semibold transition-all hover:bg-slate-100 disabled:opacity-50"
+          className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 transition-all hover:bg-violet-100 disabled:opacity-50"
         >
           Previous
         </button>
@@ -236,7 +236,7 @@ export default function CoursesPageClient() {
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={!hasMore || loading}
-          className="rounded-full border px-4 py-2 text-sm font-semibold transition-all hover:bg-slate-100 disabled:opacity-50"
+          className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 transition-all hover:bg-violet-100 disabled:opacity-50"
         >
           Next
         </button>

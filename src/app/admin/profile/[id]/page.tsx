@@ -146,7 +146,7 @@ export default function AdminProfileViewPage() {
   }, [id, role]);
 
   if (loading) return (
-    <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F7F5FF] flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <div className="w-10 h-10 rounded-full border-4 border-violet-600 border-t-transparent animate-spin" />
         <p className="text-slate-500 font-medium">Loading profile...</p>
@@ -155,7 +155,7 @@ export default function AdminProfileViewPage() {
   );
 
   if (error || !profile) return (
-    <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F7F5FF] flex items-center justify-center">
       <div className="text-center space-y-4">
         <p className="text-rose-500 font-bold text-lg">{error || "Profile not found"}</p>
         <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-violet-600 font-semibold hover:underline">
@@ -184,7 +184,7 @@ export default function AdminProfileViewPage() {
     : [];
 
   return (
-    <div className="min-h-screen bg-[#F4F7FB] font-sans">
+    <div className="min-h-screen bg-[#F7F5FF] font-sans">
       {/* Gradient header */}
       <div className="bg-gradient-to-r from-violet-700 via-fuchsia-600 to-indigo-600 pt-10 pb-28 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff18_1px,transparent_1px)] [background-size:28px_28px]" />
@@ -199,7 +199,7 @@ export default function AdminProfileViewPage() {
       <div className="max-w-4xl mx-auto px-4 -mt-20 pb-16 relative z-10 space-y-6">
 
         {/* Profile card */}
-        <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-8">
+        <div className="bg-white rounded-3xl shadow-xl border border-[#E4DDF5] p-8">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-lg shrink-0">
               {getInitials(profile.user.name)}
@@ -244,7 +244,7 @@ export default function AdminProfileViewPage() {
             </div>
           </div>
           {instructor?.bio && (
-            <div className="mt-6 pt-6 border-t border-slate-100">
+            <div className="mt-6 pt-6 border-t border-[#E4DDF5]">
               <p className="text-slate-600 leading-relaxed">{instructor.bio}</p>
             </div>
           )}
@@ -258,7 +258,7 @@ export default function AdminProfileViewPage() {
               { label: "Years Exp.", value: instructor.years_experience, icon: Briefcase, bg: "bg-violet-100", color: "text-violet-600" },
               { label: "Courses", value: uniqueCourses.length, icon: BookOpen, bg: "bg-emerald-100", color: "text-emerald-600" },
             ].map(({ label, value, icon: Icon, bg, color }) => (
-              <div key={label} className="bg-white rounded-2xl shadow-md border border-white/60 p-5 flex items-center gap-4">
+              <div key={label} className="bg-white rounded-2xl shadow-md border border-[#E4DDF5] p-5 flex items-center gap-4">
                 <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center`}>
                   <Icon size={20} className={color} />
                 </div>
@@ -280,7 +280,7 @@ export default function AdminProfileViewPage() {
               { label: "Average Progress", value: `${studentSummary.average_progress}%`, icon: Activity, bg: "bg-blue-100", color: "text-blue-600" },
               { label: "Placement Tests", value: studentSummary.placement_attempts, icon: Target, bg: "bg-fuchsia-100", color: "text-fuchsia-600" },
             ].map(({ label, value, icon: Icon, bg, color }) => (
-              <div key={label} className="bg-white rounded-2xl shadow-md border border-white/60 p-5 flex items-center gap-4">
+              <div key={label} className="bg-white rounded-2xl shadow-md border border-[#E4DDF5] p-5 flex items-center gap-4">
                 <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
                   <Icon size={20} className={color} />
                 </div>
@@ -295,14 +295,14 @@ export default function AdminProfileViewPage() {
 
         {/* Courses — instructor only */}
         {instructor && uniqueCourses.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
+          <div className="bg-white rounded-3xl shadow-xl border border-[#E4DDF5] p-6">
             <h2 className="text-lg font-extrabold text-slate-800 mb-5 flex items-center gap-2">
               <BookOpen size={18} className="text-violet-600" /> Courses Taught
             </h2>
             <div className="space-y-3">
               {uniqueCourses.map((course) => (
                 <a key={course.id} href={course.url} target="_blank" rel="noopener noreferrer"
-                  className="block rounded-2xl border border-slate-100 bg-slate-50 hover:bg-violet-50 hover:border-violet-200 p-4 transition group">
+                  className="block rounded-2xl border border-[#E4DDF5] bg-[#F7F5FF] hover:bg-violet-50 hover:border-violet-200 p-4 transition group">
                   <div className="flex items-start justify-between gap-3">
                     <p className="font-bold text-slate-800 text-sm group-hover:text-violet-700 transition line-clamp-2">{course.title}</p>
                     <div className="flex flex-col items-end gap-1 shrink-0">
@@ -325,7 +325,7 @@ export default function AdminProfileViewPage() {
 
         {/* Enrolled courses — student only */}
         {student && (
-          <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
+          <div className="bg-white rounded-3xl shadow-xl border border-[#E4DDF5] p-6">
             <div className="flex items-center justify-between gap-3 mb-5">
               <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                 <BookOpen size={18} className="text-violet-600" /> Enrolled Courses
@@ -340,7 +340,7 @@ export default function AdminProfileViewPage() {
                 {enrollments.map((enrollment) => {
                   const progress = Math.max(0, Math.min(100, enrollment.progress_percent ?? 0));
                   return (
-                    <div key={enrollment.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                    <div key={enrollment.id} className="rounded-2xl border border-[#E4DDF5] bg-[#F7F5FF] p-5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="font-extrabold text-slate-800 line-clamp-2">{enrollment.course.title}</p>
@@ -376,7 +376,7 @@ export default function AdminProfileViewPage() {
                 })}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+              <div className="rounded-2xl border border-dashed border-violet-200 py-10 text-center text-sm text-slate-400">
                 This student is not enrolled in any courses yet.
               </div>
             )}
@@ -385,7 +385,7 @@ export default function AdminProfileViewPage() {
 
         {/* Skills — student only */}
         {student && (
-          <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
+          <div className="bg-white rounded-3xl shadow-xl border border-[#E4DDF5] p-6">
             <h2 className="text-lg font-extrabold text-slate-800 mb-5 flex items-center gap-2">
               <Activity size={18} className="text-blue-600" /> Skill Matrix
             </h2>
@@ -394,7 +394,7 @@ export default function AdminProfileViewPage() {
                 {studentSkills.map((skill) => {
                   const score = Math.max(0, Math.min(100, skill.current_score ?? 0));
                   return (
-                    <div key={skill.id} className="rounded-2xl border border-slate-100 p-4">
+                    <div key={skill.id} className="rounded-2xl border border-[#E4DDF5] p-4">
                       <div className="mb-2 flex items-center justify-between gap-3">
                         <span className="truncate text-sm font-bold text-slate-700">{skill.name}</span>
                         <span className="text-sm font-extrabold text-blue-600">{score}%</span>
@@ -407,7 +407,7 @@ export default function AdminProfileViewPage() {
                 })}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+              <div className="rounded-2xl border border-dashed border-violet-200 py-10 text-center text-sm text-slate-400">
                 No skill scores are available for this student yet.
               </div>
             )}
@@ -416,14 +416,14 @@ export default function AdminProfileViewPage() {
 
         {/* Placement attempts — student only */}
         {student && (
-          <div className="bg-white rounded-3xl shadow-xl border border-white/60 p-6">
+          <div className="bg-white rounded-3xl shadow-xl border border-[#E4DDF5] p-6">
             <h2 className="text-lg font-extrabold text-slate-800 mb-5 flex items-center gap-2">
               <Target size={18} className="text-fuchsia-600" /> Placement Test Attempts
             </h2>
             {placementAttempts.length > 0 ? (
               <div className="space-y-3">
                 {placementAttempts.map((attempt) => (
-                  <div key={attempt.id} className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div key={attempt.id} className="flex flex-col gap-3 rounded-2xl border border-[#E4DDF5] bg-[#F7F5FF] p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-bold text-slate-800">{attempt.category}</p>
                       <p className="mt-1 text-xs text-slate-400">{formatDate(attempt.end_time ?? attempt.start_time)}</p>
@@ -443,7 +443,7 @@ export default function AdminProfileViewPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-400">
+              <div className="rounded-2xl border border-dashed border-violet-200 py-10 text-center text-sm text-slate-400">
                 No placement test attempts are available for this student yet.
               </div>
             )}

@@ -117,7 +117,7 @@ export default function CourseDetailsClient({
     course.categories?.[0]?.name ?? course.domain?.name ?? "Course";
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] py-10 px-4 sm:px-6 lg:px-8 font-sans antialiased">
+    <div className="min-h-screen bg-[#F7F5FF] py-10 px-4 sm:px-6 lg:px-8 font-sans antialiased">
       {/* ── زر العودة ──────────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto mb-6">
         <button
@@ -184,7 +184,7 @@ export default function CourseDetailsClient({
           </div>
 
           {/* About + Learning Outcomes */}
-          <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+          <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#E4DDF5] shadow-sm">
             <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-purple-600 pl-3 mb-3">
               About this Course
             </h3>
@@ -195,7 +195,7 @@ export default function CourseDetailsClient({
             {/* Learning Outcomes */}
             {course.learning_outcomes && course.learning_outcomes.length > 0 && (
               <>
-                <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-purple-600 pl-3 mb-4">
+                <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-violet-600 pl-3 mb-4">
                   What you will learn
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -203,11 +203,11 @@ export default function CourseDetailsClient({
                     splitConcatenatedOutcome(lo.outcome).map((point, idx) => (
                       <div
                         key={`${lo.id}-${idx}`}
-                        className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100"
+                        className="flex items-start gap-3 bg-[#F7F5FF] p-4 rounded-2xl border border-[#E4DDF5]"
                       >
                         <Icon
                           icon="fluent:checkmark-circle-24-filled"
-                          className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5"
+                          className="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5"
                         />
                         <p className="text-sm text-slate-600 font-medium leading-relaxed">
                           {point}
@@ -222,14 +222,14 @@ export default function CourseDetailsClient({
             {/* Skills */}
             {course.skills && course.skills.length > 0 && (
               <div className="mt-8">
-                <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-purple-600 pl-3 mb-4">
+                <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-violet-600 pl-3 mb-4">
                   Skills you'll gain
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {course.skills.map((s: Skill) => (
                     <span
                       key={s.id}
-                      className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full border border-purple-100"
+                      className="px-3 py-1.5 bg-violet-50 text-violet-700 text-xs font-semibold rounded-full border border-violet-100"
                     >
                       {s.name}
                     </span>
@@ -241,16 +241,16 @@ export default function CourseDetailsClient({
             {/* Instructors */}
             {course.instructors && course.instructors.length > 0 && (
               <div className="mt-8">
-                <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-purple-600 pl-3 mb-4">
+                <h3 className="text-lg font-extrabold text-slate-900 border-l-4 border-violet-600 pl-3 mb-4">
                   Instructors
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {course.instructors.map((inst: Instructor) => (
                     <div
                       key={inst.id}
-                      className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100"
+                      className="flex items-center gap-2 bg-[#F7F5FF] px-4 py-2 rounded-xl border border-[#E4DDF5]"
                     >
-                      <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-bold text-sm">
+                      <div className="w-8 h-8 rounded-full bg-violet-200 flex items-center justify-center text-violet-700 font-bold text-sm">
                         {inst.name.charAt(0).toUpperCase()}
                       </div>
                       <span className="text-sm font-medium text-slate-700">
@@ -288,18 +288,18 @@ export default function CourseDetailsClient({
         </div>
 
         {/* ══ العمود الأيمن: Modules ═══════════════════════════════════════ */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm sticky top-6">
+        <div className="bg-white rounded-3xl p-6 border border-[#E4DDF5] shadow-sm sticky top-6">
 
           {/* Enrollment status */}
           {course.enrollment ? (
             <>
               <div className="flex justify-between text-xs font-bold text-slate-400 mb-2">
                 <span>Your Progress</span>
-                <span className="text-purple-600">{progressPercentage}%</span>
+                <span className="text-violet-600">{progressPercentage}%</span>
               </div>
               <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-1">
                 <div
-                  className="bg-purple-600 h-full rounded-full transition-all duration-300"
+                  className="bg-violet-600 h-full rounded-full transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -313,7 +313,7 @@ export default function CourseDetailsClient({
                 href={course.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-2xl transition"
+                className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 rounded-2xl transition"
               >
                 <Icon icon="fluent:open-24-filled" className="w-4 h-4" />
                 Go to Course
@@ -339,8 +339,8 @@ export default function CourseDetailsClient({
                       onClick={() => setActiveModuleId(mod.id)}
                       className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${
                         isActive
-                          ? "bg-purple-50 border-purple-200 text-purple-700 font-bold"
-                          : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
+                          ? "bg-violet-50 border-violet-200 text-violet-700 font-bold"
+                          : "bg-white border-[#E4DDF5] text-slate-600 hover:bg-violet-50"
                       }`}
                     >
                       <div className="flex items-center gap-3 truncate">
@@ -351,7 +351,7 @@ export default function CourseDetailsClient({
                               : "fluent:play-circle-24-regular"
                           }
                           className={`w-5 h-5 flex-shrink-0 ${
-                            isActive ? "text-purple-500" : "text-slate-400"
+                            isActive ? "text-violet-500" : "text-slate-400"
                           }`}
                         />
                         <span className="text-sm truncate">{mod.name}</span>

@@ -286,7 +286,7 @@ export default function InstructorProfilePage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#F4F7FB] pb-20 font-sans text-slate-800">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#F7F5FF] pb-20 font-sans text-slate-800">
       {loading && <div className="fixed inset-0 z-[200] grid place-items-center bg-white/70 text-violet-700 font-bold backdrop-blur-sm">Loading instructor profile...</div>}
       {error && <div className="relative z-[201] mx-auto mt-4 max-w-3xl rounded-2xl bg-rose-50 px-5 py-4 text-center font-semibold text-rose-700">{error}</div>}
       {actionError && !showAddCourse && <div className="relative z-[201] mx-auto mt-4 max-w-3xl rounded-2xl bg-rose-50 px-5 py-4 text-center font-semibold text-rose-700">{actionError}</div>}
@@ -349,14 +349,14 @@ export default function InstructorProfilePage() {
 
       <div className="pointer-events-none absolute -bottom-20 right-[10%] h-80 w-80 rounded-[3rem] bg-gradient-to-br from-amber-300/20 to-orange-300/20 profile-float-2" />
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-indigo-100/20" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#EEE9FF]/30 via-transparent to-indigo-100/20" />
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         {/* Back */}
         {/* <Link
           href="/dashboard"
-          className="mb-6 inline-flex items-center gap-2 rounded-xl border border-white/80 bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm backdrop-blur-xl transition hover:-translate-x-1 hover:text-violet-700"
+          className="mb-6 inline-flex items-center gap-2 rounded-xl border border-[#E4DDF5] bg-white/80 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm backdrop-blur-xl transition hover:-translate-x-1 hover:text-violet-700"
         >
           <ArrowLeft size={17} />
           Back to Dashboard
@@ -364,7 +364,7 @@ export default function InstructorProfilePage() {
 
        
 
-        <section className="relative overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/85 shadow-[0_30px_80px_rgba(79,55,211,0.12)] backdrop-blur-2xl">
+        <section className="relative overflow-hidden rounded-[2.5rem] border border-[#E4DDF5] bg-white/90 shadow-[0_30px_80px_rgba(79,55,211,0.12)] backdrop-blur-2xl">
           <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-400" />
 
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-violet-200/30 blur-3xl" />
@@ -458,7 +458,7 @@ export default function InstructorProfilePage() {
 
         {/* About */}
         <section className="mt-7 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-          <div className="rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-xl shadow-violet-100/40 backdrop-blur-xl">
+          <div className="rounded-[2rem] border border-[#E4DDF5] bg-white/90 p-7 shadow-xl shadow-violet-100/40 backdrop-blur-xl">
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
                 <UserRound size={19} />
@@ -545,7 +545,7 @@ export default function InstructorProfilePage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-[2rem] border border-dashed border-violet-200 bg-white/70 px-6 py-16 text-center backdrop-blur-xl">
+            <div className="rounded-[2rem] border border-dashed border-violet-200 bg-white/85 px-6 py-16 text-center backdrop-blur-xl">
               <BookOpen
                 size={35}
                 className="mx-auto mb-3 text-violet-300"
@@ -586,7 +586,7 @@ export default function InstructorProfilePage() {
             <div className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-violet-300/30 blur-3xl" />
 
             {/* Header */}
-            <div className="relative flex items-center justify-between border-b border-slate-100 p-6">
+            <div className="relative flex items-center justify-between border-b border-[#E4DDF5] p-6">
               <div>
                 <h2 className="text-2xl font-black text-[#1A253C]">
                   Assign Course
@@ -616,7 +616,7 @@ export default function InstructorProfilePage() {
                 value={courseSearch}
                 onChange={(e) => setCourseSearch(e.target.value)}
                 placeholder="Search available courses..."
-                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-11 pr-4 text-sm outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                className="h-12 w-full rounded-xl border border-[#E4DDF5] bg-[#F7F5FF] pl-11 pr-4 text-sm outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
               />
             </div>
 
@@ -635,7 +635,7 @@ export default function InstructorProfilePage() {
                   {remainingCourses.map((course) => (
                     <div
                       key={course.id}
-                      className="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-4 transition hover:border-violet-200 hover:bg-violet-50/40 sm:flex-row sm:items-center"
+                      className="flex flex-col gap-4 rounded-2xl border border-[#E4DDF5] bg-white p-4 transition hover:border-violet-200 hover:bg-violet-50/40 sm:flex-row sm:items-center"
                     >
                       <div
                         className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${course.iconBg}`}
@@ -704,7 +704,7 @@ function StatCard({
   iconClass: string;
 }) {
   return (
-    <div className="group flex items-center gap-4 rounded-[1.6rem] border border-white/80 bg-white/80 p-5 shadow-lg shadow-violet-100/40 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <div className="group flex items-center gap-4 rounded-[1.6rem] border border-[#E4DDF5] bg-white/90 p-5 shadow-lg shadow-violet-100/40 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div
         className={`flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 ${iconClass}`}
       >
@@ -757,7 +757,7 @@ function CourseManagementCard({
   removing: boolean;
 }) {
   return (
-    <article className="group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-xl shadow-violet-100/40 backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:shadow-2xl">
+    <article className="group relative overflow-hidden rounded-[2rem] border border-[#E4DDF5] bg-white/90 p-6 shadow-xl shadow-violet-100/40 backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:shadow-2xl">
       {/* Top accent */}
       <div
         className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${course.color}`}
@@ -835,7 +835,7 @@ function CourseMetric({
   label: string;
 }) {
   return (
-    <div className="rounded-xl bg-slate-50/80 px-3 py-3 text-center">
+    <div className="rounded-xl bg-[#F7F5FF] px-3 py-3 text-center">
       <Icon size={15} className="mx-auto mb-1 text-slate-400" />
 
       <p className="text-sm font-black text-slate-700">

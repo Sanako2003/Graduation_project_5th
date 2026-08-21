@@ -10,7 +10,7 @@ type Course = {
 
 export default function CourseCard({ course }: { course: Course }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition duration-300 overflow-hidden cursor-pointer">
+    <div className="bg-white rounded-2xl border border-[#E4DDF5] shadow-sm hover:shadow-lg transition duration-300 overflow-hidden cursor-pointer">
       
       {/* IMAGE */}
       <div className="h-40 w-full overflow-hidden">
@@ -23,12 +23,12 @@ export default function CourseCard({ course }: { course: Course }) {
 
       {/* CONTENT */}
       <div className="p-4">
-        <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug">
+        <h3 className="text-sm font-semibold text-[#172033] line-clamp-2 leading-snug">
           {course.title}
         </h3>
 
         {/* RATING + STUDENTS */}
-        <div className="flex items-center gap-3 mt-3 text-sm text-gray-500">
+        <div className="flex items-center gap-3 mt-3 text-sm text-slate-500">
           <span className="text-yellow-500">⭐ {course.average_rating}</span>
           <span>
             {course.students
@@ -46,7 +46,7 @@ export default function CourseCard({ course }: { course: Course }) {
             <img className="w-7 h-7 rounded-full border-2 border-white" src="https://i.pravatar.cc/40?img=3"/>
           </div>
 
-          <span className="text-sm font-bold text-gray-900">
+          <span className="text-sm font-bold text-[#172033]">
             ${course.price}
           </span>
         </div>

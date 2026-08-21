@@ -98,7 +98,7 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-12 items-center">
 
         {/* ---- Categories ---- */}
-        <div className="relative p-8 bg-gradient-to-b from-slate-50/80 to-white/40 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50">
+        <div className="relative p-8 bg-white rounded-3xl border border-[#E4DDF5] shadow-xl shadow-violet-100/50">
           <div className="absolute inset-0 bg-[radial-gradient(#c084fc_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.05] pointer-events-none rounded-3xl" />
 
           {loadingCats && (
@@ -125,11 +125,11 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
                     <div key={cat.id} onClick={() => setSelectedId(cat.id)}
                       className={`flex items-center justify-between p-3 rounded-2xl shadow-sm cursor-pointer transition-all duration-300 border-2 ${
                         selected
-                          ? "border-purple-600 bg-white ring-4 ring-purple-100 scale-[1.02] shadow-md"
-                          : `border-white/40 hover:border-slate-300 hover:scale-[1.01] ${color.bg}`
+                          ? "border-violet-600 bg-white ring-4 ring-violet-100 scale-[1.02] shadow-md"
+                          : `border-white/40 hover:border-violet-300 hover:scale-[1.01] ${color.bg}`
                       }`}
                     >
-                      <span className={`text-sm font-bold tracking-wide ${selected ? "text-purple-700" : color.text}`}>
+                      <span className={`text-sm font-bold tracking-wide ${selected ? "text-violet-700" : color.text}`}>
                         {cat.name}
                       </span>
                       <Icon icon={icon} className={`w-6 h-6 transition-transform duration-300 flex-shrink-0 ${selected ? "scale-110" : ""}`} />
@@ -146,7 +146,7 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
           <div className="flex items-start sm:items-center gap-4 flex-col sm:flex-row">
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
               Masar Tech Aptitude <br />
-              <span className="text-purple-600">Scale & Discovery</span>
+              <span className="text-violet-600">Scale & Discovery</span>
             </h1>
             <Icon icon="fluent-emoji:light-bulb" className="w-14 h-14 animate-pulse flex-shrink-0 mt-2 sm:mt-0" />
           </div>
@@ -178,7 +178,7 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
 
           <div className="flex flex-wrap gap-2.5 pt-2 max-w-2xl">
             {keywords.map((kw, i) => (
-              <div key={i} className="bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-600 px-4 py-2 rounded-full text-xs font-medium border border-slate-200/60 transition-colors cursor-default">
+              <div key={i} className="bg-white hover:bg-violet-50 text-slate-600 hover:text-violet-600 px-4 py-2 rounded-full text-xs font-medium border border-[#E4DDF5] transition-colors cursor-default">
                 {kw}
               </div>
             ))}
@@ -186,9 +186,9 @@ export default function SkillsAssessment({ onQuizReady }: Props) {
 
           <div className="pt-2">
             <button onClick={handleStart} disabled={!selectedId || loading}
-              className={`group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 ${
+              className={`group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 ${
                 selectedId && !loading
-                  ? "shadow-[0_16px_36px_rgba(124,58,237,0.28)] hover:-translate-y-0.5 hover:from-purple-700 hover:to-indigo-700 cursor-pointer"
+                  ? "shadow-[0_16px_36px_rgba(124,58,237,0.28)] hover:-translate-y-0.5 hover:from-violet-700 hover:to-indigo-700 cursor-pointer"
                   : "opacity-40 cursor-not-allowed"
               }`}
             >

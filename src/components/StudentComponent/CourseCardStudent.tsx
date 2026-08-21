@@ -63,10 +63,10 @@ export default function CourseCard({
   const styles = getStatusStyles();
 
   return (
-    <div className="bg-white/30 backdrop-blur-2xl rounded-3xl shadow-xl shadow-black/10 border border-white/50 p-6 hover:shadow-2xl hover:border-white/70 transition-all duration-300 group cursor-pointer">
+    <div className="bg-white/90 backdrop-blur-2xl rounded-3xl shadow-xl shadow-violet-100/50 border border-[#E4DDF5] p-6 hover:shadow-2xl hover:border-violet-200 transition-all duration-300 group cursor-pointer">
       {/* Status Badge */}
       <div
-        className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-2xl ${styles.badgeBg} ${styles.badgeText} border border-white/60 mb-5`}
+        className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-2xl ${styles.badgeBg} ${styles.badgeText} border border-violet-100 mb-5`}
       >
         <span className={styles.badgeIconColor}>
           {getStatusIcon()}
@@ -77,13 +77,13 @@ export default function CourseCard({
       </div>
 
       {/* Course Title */}
-      <h3 className="text-gray-900 text-xl font-semibold leading-tight mb-6 min-h-[3.2rem]">
+      <h3 className="text-[#172033] text-xl font-semibold leading-tight mb-6 min-h-[3.2rem]">
         {title}
       </h3>
 
       {/* Progress Bar */}
       <div className="mb-5">
-        <div className="w-full bg-white/50 backdrop-blur-sm h-2 rounded-2xl overflow-hidden border border-white/40">
+        <div className="w-full bg-violet-50 backdrop-blur-sm h-2 rounded-2xl overflow-hidden border border-violet-100">
           <div
             className={`${styles.progressBar} ${styles.progressGlow} h-full rounded-2xl transition-all duration-500 ease-out`}
             style={{ width: `${progress}%` }}
@@ -94,11 +94,11 @@ export default function CourseCard({
       {/* Footer */}
       <div className="flex justify-between items-end">
         <div>
-          <span className="text-gray-600 text-sm">
+          <span className="text-slate-600 text-sm">
             {language}
           </span>
           <span className="text-gray-400 text-sm mx-1">·</span>
-          <span className="text-gray-600 text-sm">
+          <span className="text-slate-600 text-sm">
             {level}
           </span>
         </div>

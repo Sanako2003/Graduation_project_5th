@@ -11,8 +11,8 @@ export const dynamic = "force-dynamic";
 
 export default function Home() {
   return (
-    <div className="bg-zinc-50 font-sans bg-gradient-to-b from-purple-50 to-white">
-      <main className="bg-zinc-50 font-sans">
+    <div className="bg-[#F7F5FF] font-sans">
+      <main className="bg-[#F7F5FF] font-sans">
         <Hero />
         <Section2 />
         <Sectionqus />

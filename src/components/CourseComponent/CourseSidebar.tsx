@@ -17,8 +17,8 @@ export default function CourseSidebar({
 }: CourseSidebarProps) {
   return (
     <aside className={className}>
-      <div className="bg-white rounded-xl shadow p-5">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+      <div className="bg-white rounded-xl border border-[#E4DDF5] shadow-sm p-5">
+        <h3 className="text-lg font-semibold text-[#172033]">{title}</h3>
 
         <ul className="mt-4 space-y-3">
           {features.map((item, idx) => {
@@ -30,7 +30,7 @@ export default function CourseSidebar({
             return (
               <li key={`${text}-${idx}`} className="flex items-start gap-3 py-2">
                 <span className="text-xl mt-0.5">{icon}</span>
-                <span className="text-gray-800 font-medium">{text}</span>
+                <span className="text-slate-800 font-medium">{text}</span>
               </li>
             );
           })}
@@ -38,7 +38,7 @@ export default function CourseSidebar({
 
         <Link
           href={ctaHref}
-          className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-purple-600 px-4 py-2.5 font-semibold text-white hover:bg-purple-700 transition"
+          className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-violet-600 px-4 py-2.5 font-semibold text-white hover:bg-violet-700 transition"
         >
           {ctaLabel}
         </Link>

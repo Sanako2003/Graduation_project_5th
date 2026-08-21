@@ -182,7 +182,7 @@ export default function CoursesCategory() {
   }, []);
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#fafafa] py-24 px-6">
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#F7F5FF] py-24 px-6">
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute -top-[10%] -left-[10%] h-[70%] w-[70%] rounded-full bg-purple-200/40 blur-[140px]" />
         <div className="absolute top-[20%] right-[5%] h-[60%] w-[50%] rounded-full bg-blue-100/50 blur-[120px]" />
@@ -203,12 +203,12 @@ export default function CoursesCategory() {
       </div>
 
       <div className="relative z-20 mx-auto max-w-6xl text-center ">
-        <div className="inline-block px-2 py-1.5 mb-6 rounded-full bg-purple-100 text-purple-700 tracking-wide uppercase">
+        <div className="inline-block px-2 py-1.5 mb-6 rounded-full bg-violet-100 text-violet-700 tracking-wide uppercase">
           Top Categories
         </div>
         <Circle className="mx-auto h-10 w-10 text-purple-400 mb-4" />
         <h2 className="mb-16 text-5xl font-black tracking-tight">
-          Explore Our <span className="text-purple-600">Course</span>
+          Explore Our <span className="text-violet-600">Course</span>
         </h2>
 
         {loading && (
@@ -226,7 +226,7 @@ export default function CoursesCategory() {
                   ? `/courses?domain_id=${cat.id}`
                   : `/courses?category=${encodeURIComponent(cat.name)}`
               }
-              className="group relative flex items-center rounded-[2.5rem] border border-white bg-white/60 p-8 shadow-[0_15px_40px_rgba(0,0,0,0.04)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-purple-200/60"
+              className="group relative flex items-center rounded-[2.5rem] border border-[#E4DDF5] bg-white p-8 shadow-[0_15px_40px_rgba(124,58,237,0.07)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-violet-200/60"
             >
               <div
                 className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.8rem] ${cat.color} text-white shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-[10deg]`}
@@ -235,7 +235,7 @@ export default function CoursesCategory() {
               </div>
 
               <div className="ml-8 text-left">
-                <h3 className="text-2xl font-extrabold text-slate-800 transition-colors group-hover:text-purple-600">
+                <h3 className="text-2xl font-extrabold text-slate-800 transition-colors group-hover:text-violet-600">
                   {cat.name}
                 </h3>
                 <p className="mt-2 text-sm font-bold text-slate-400 uppercase tracking-widest">
@@ -243,7 +243,7 @@ export default function CoursesCategory() {
                 </p>
               </div>
 
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-2 text-purple-600">
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-2 text-violet-600">
                 <svg
                   width="24"
                   height="24"
@@ -264,7 +264,7 @@ export default function CoursesCategory() {
         <div className="mt-24">
           <Link
             href="/courses"
-            className="group relative inline-flex items-center overflow-hidden rounded-2xl bg-slate-900 px-16 py-5 text-xl font-black text-white transition-all hover:scale-105 active:scale-95"
+            className="group relative inline-flex items-center overflow-hidden rounded-2xl bg-violet-600 px-16 py-5 text-xl font-black text-white transition-all hover:scale-105 hover:bg-violet-700 active:scale-95"
           >
             <span className="relative z-10">See All Categories</span>
           </Link>

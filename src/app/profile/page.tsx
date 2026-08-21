@@ -32,7 +32,7 @@ export default function ProfilePage() {
   // زائر → صفحة فاضية بدون تحويل تلقائي (متل ما اتفقنا)
   if (!user) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#F4F7FB] px-4">
+      <main className="min-h-screen flex items-center justify-center bg-[#F7F5FF] px-4">
         <p className="text-slate-500 text-sm">
           هاي الصفحة متاحة فقط للمستخدمين المسجلين.
         </p>
@@ -42,7 +42,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#F4F7FB]">
+      <main className="min-h-screen flex items-center justify-center bg-[#F7F5FF]">
         <span className="h-8 w-8 animate-spin rounded-full border-2 border-purple-600 border-t-transparent" />
       </main>
     );
@@ -50,14 +50,14 @@ export default function ProfilePage() {
 
   if (error || !data) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#F4F7FB]">
+      <main className="min-h-screen flex items-center justify-center bg-[#F7F5FF]">
         <p className="text-red-500 text-sm">{error || "لا توجد بيانات"}</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#F4F7FB] px-4 py-10 space-y-6">
+    <main className="min-h-screen bg-[#F7F5FF] px-4 py-10 space-y-6">
       <ProfileHeader
         student={{
           id: data.student.id,

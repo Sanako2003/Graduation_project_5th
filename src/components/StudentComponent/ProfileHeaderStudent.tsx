@@ -23,9 +23,9 @@ export default function ProfileHeader({ student }: ProfileHeaderProps) {
   const lastName = nameParts.slice(1).join(" ") || "";
 
   return (
-    <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-xl shadow-purple-500/10 border border-white/70 p-7 relative overflow-hidden">
+    <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-xl shadow-violet-500/10 border border-[#E4DDF5] p-7 relative overflow-hidden">
       {/* Soft background glow decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-cyan-50 to-transparent opacity-60 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-teal-50 to-transparent opacity-60 pointer-events-none" />
 
       {/* Bell Icon */}
       <div className="absolute top-6 right-7 z-20">
@@ -43,7 +43,7 @@ export default function ProfileHeader({ student }: ProfileHeaderProps) {
         <div className="flex items-center gap-6">
           {/* Avatar */}
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-cyan-400 to-pink-400 p-[3.5px] shadow-md">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 via-teal-400 to-fuchsia-400 p-[3.5px] shadow-md">
               {student.avatar ? (
                 <Image
                   src={student.avatar}
@@ -69,7 +69,7 @@ export default function ProfileHeader({ student }: ProfileHeaderProps) {
           {/* Name and Details */}
           <div className="pt-1">
             <div className="flex items-baseline gap-3">
-              <h1 className="text-4xl font-semibold text-gray-900 tracking-tight">
+              <h1 className="text-4xl font-semibold text-[#172033] tracking-tight">
                 {firstName}
               </h1>
               <h1 className="text-4xl font-semibold text-cyan-500 tracking-tight">
@@ -78,12 +78,12 @@ export default function ProfileHeader({ student }: ProfileHeaderProps) {
             </div>
 
             <div className="mt-4 space-y-2">
-              <p className="flex items-center gap-2.5 text-gray-700 text-[15px]">
+              <p className="flex items-center gap-2.5 text-slate-700 text-[15px]">
                 <span className="text-xl">🎓</span>
                 <span className="font-medium">{student.track}</span>
               </p>
 
-              <p className="flex items-center gap-2.5 text-gray-700 text-[15px]">
+              <p className="flex items-center gap-2.5 text-slate-700 text-[15px]">
                 <span className="text-xl">✉️</span>
                 <span className="font-medium">{student.email}</span>
               </p>
@@ -96,37 +96,37 @@ export default function ProfileHeader({ student }: ProfileHeaderProps) {
           {/* Enrolled */}
           <div className="flex flex-col items-center text-center">
         
-            <span className="text-3xl font-bold text-gray-900 mt-1">
+            <span className="text-3xl font-bold text-[#172033] mt-1">
               {student.enrolledCourses ?? 12}
             </span>
-            <span className="text-xs text-gray-500 font-medium tracking-widest mt-1">ENROLLED</span>
+            <span className="text-xs text-slate-500 font-medium tracking-widest mt-1">ENROLLED</span>
           </div>
 
           {/* Done */}
           <div className="flex flex-col items-center text-center">
          
-            <span className="text-3xl font-bold text-gray-900 mt-1">
+            <span className="text-3xl font-bold text-[#172033] mt-1">
               {student.completedCourses ?? 7}
             </span>
-            <span className="text-xs text-gray-500 font-medium tracking-widest mt-1">DONE</span>
+            <span className="text-xs text-slate-500 font-medium tracking-widest mt-1">DONE</span>
           </div>
 
           {/* Completion */}
           <div className="flex flex-col items-center text-center">
          
-            <span className="text-3xl font-bold text-gray-900 mt-1">
+            <span className="text-3xl font-bold text-[#172033] mt-1">
               {student.completionRate ?? 94}%
             </span>
-            <span className="text-xs text-gray-500 font-medium tracking-widest mt-1">COMPLETION</span>
+            <span className="text-xs text-slate-500 font-medium tracking-widest mt-1">COMPLETION</span>
           </div>
 
           {/* Study Time */}
           <div className="flex flex-col items-center text-center">
           
-            <span className="text-3xl font-bold text-gray-900 mt-1">
+            <span className="text-3xl font-bold text-[#172033] mt-1">
               {student.studyHours ?? 328}h
             </span>
-            <span className="text-xs text-gray-500 font-medium tracking-widest mt-1">STUDY TIME</span>
+            <span className="text-xs text-slate-500 font-medium tracking-widest mt-1">STUDY TIME</span>
           </div>
         </div>
       </div>

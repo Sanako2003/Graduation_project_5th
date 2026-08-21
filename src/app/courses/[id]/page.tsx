@@ -8,8 +8,10 @@ import CourseDetailsClient from "../../../components/CourseComponent/CourseDetai
 
 export interface Module {
   id: number;
-  title: string;
+  name: string;
+  title?: string;
   duration_minutes?: number;
+  order_index?: number;
   order?: number;
 }
 
@@ -110,9 +112,9 @@ export default function DynamicCoursePage() {
   // ── Loading ───────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="w-10 h-10 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin" />
-        <p className="text-purple-600 font-semibold">Loading course details…</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 bg-[#F7F5FF]">
+        <div className="w-10 h-10 border-4 border-violet-300 border-t-violet-600 rounded-full animate-spin" />
+        <p className="text-violet-600 font-semibold">Loading course details…</p>
       </div>
     );
   }
@@ -120,14 +122,14 @@ export default function DynamicCoursePage() {
   // ── Error ─────────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 bg-[#F7F5FF] px-4">
         <p className="text-red-500 font-bold text-lg">
           ⚠️ Failed to load course
         </p>
-        <p className="text-gray-500 text-sm text-center max-w-md">{error}</p>
+        <p className="text-slate-500 text-sm text-center max-w-md">{error}</p>
         <button
           onClick={load}
-          className="mt-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+          className="mt-2 px-6 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
         >
           Retry
         </button>
@@ -138,8 +140,8 @@ export default function DynamicCoursePage() {
   // ── Not Found ─────────────────────────────────────────────────────────────
   if (!courseData) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-gray-400">Course not found.</p>
+      <div className="flex items-center justify-center min-h-[60vh] bg-[#F7F5FF]">
+        <p className="text-slate-400">Course not found.</p>
       </div>
     );
   }

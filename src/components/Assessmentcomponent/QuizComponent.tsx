@@ -100,7 +100,7 @@ export default function QuizComponent() {
   // ---- SUBMITTING ----
   if (phase === 'submitting') {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7F5FF] flex items-center justify-center">
         <div className="text-center space-y-4">
           <span className="h-12 w-12 animate-spin rounded-full border-4 border-purple-400 border-t-transparent mx-auto block" />
           <p className="text-slate-600 font-medium">Analyzing your answers...</p>
@@ -121,8 +121,8 @@ export default function QuizComponent() {
   const activeStepId    = Math.ceil(((currentIndex + 1) / totalQuestions) * steps.length);
 
   return (
-    <div className="min-h-screen bg-[#F4F5F9] p-4 md:p-8 flex items-center justify-center font-sans antialiased">
-      <div className="w-full max-w-5xl bg-[#F8F9FC] rounded-3xl p-6 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] relative overflow-hidden border border-gray-100/50">
+    <div className="min-h-screen bg-[#F7F5FF] p-4 md:p-8 flex items-center justify-center font-sans antialiased">
+      <div className="w-full max-w-5xl bg-white rounded-3xl p-6 md:p-12 shadow-[0_18px_50px_rgba(124,58,237,0.08)] relative overflow-hidden border border-[#E4DDF5]">
 
         {/* Stepper */}
         <div className="flex items-center justify-center w-full max-w-2xl mx-auto mb-12 relative px-4">
@@ -132,7 +132,7 @@ export default function QuizComponent() {
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
                   step.id === activeStepId
                     ? 'bg-[#2B368A] text-white shadow-lg shadow-indigo-900/20 scale-105'
-                    : 'bg-white text-[#8A94A6] border border-gray-200'
+                    : 'bg-white text-[#8A94A6] border border-[#E4DDF5]'
                 }`}>
                   {step.id}
                 </div>
@@ -172,7 +172,7 @@ export default function QuizComponent() {
         </div>
 
         {/* Question */}
-        <div className="bg-white rounded-2xl p-6 md:p-8 text-center border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)] max-w-3xl mx-auto mb-8">
+        <div className="bg-white rounded-2xl p-6 md:p-8 text-center border border-[#E4DDF5] shadow-[0_4px_20px_rgba(124,58,237,0.05)] max-w-3xl mx-auto mb-8">
           <h2 className="text-[#2B368A] text-lg md:text-xl font-bold leading-relaxed max-w-2xl mx-auto">
             {currentQuestion.question_text}
           </h2>
@@ -196,7 +196,7 @@ export default function QuizComponent() {
                 className={`group relative flex items-start text-left p-5 rounded-2xl border transition-all duration-300 outline-none ${
                   isSelected
                     ? 'bg-[#DCE7F9] border-[#A3BFFA] scale-[1.01] shadow-[0_6px_20px_rgba(59,130,246,0.1)]'
-                    : 'bg-white border-gray-100 hover:border-gray-300 hover:shadow-[0_4px_15px_rgba(0,0,0,0.02)] active:scale-[0.99]'
+                    : 'bg-white border-[#E4DDF5] hover:border-violet-300 hover:shadow-[0_4px_15px_rgba(124,58,237,0.08)] active:scale-[0.99]'
                 }`}
               >
                 <span className="text-[#1E293B] font-bold text-sm md:text-base mr-3 mt-0.5 min-w-[18px]">{option.option_key}.</span>
@@ -211,7 +211,7 @@ export default function QuizComponent() {
           <button
             onClick={() => currentIndex > 0 && setCurrentIndex(prev => prev - 1)}
             disabled={currentIndex === 0}
-            className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-purple-300 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 px-6 py-3 text-sm font-semibold text-violet-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous Question
           </button>

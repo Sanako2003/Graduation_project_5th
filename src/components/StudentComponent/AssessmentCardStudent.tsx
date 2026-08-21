@@ -18,14 +18,14 @@ export default function AssessmentCard({ title, date, score, color = 'purple' }:
   const strokeColor = color === 'purple' ? '#a855f7' : color === 'orange' ? '#f97316' : '#22c55e';
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-[#E4DDF5] flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className={`${colors.bg} p-3 rounded-lg`}>
           <FileText className={colors.text} size={24} />
         </div>
         <div>
           <h4 className="font-bold text-lg">{title}</h4>
-          <p className="text-gray-500 text-sm">{date}</p>
+          <p className="text-slate-500 text-sm">{date}</p>
         </div>
       </div>
       

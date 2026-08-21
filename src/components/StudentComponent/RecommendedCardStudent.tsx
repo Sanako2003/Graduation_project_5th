@@ -20,7 +20,7 @@ export default function RecommendedCard({
   colorTo = "to-purple-500",
 }: RecommendedCardProps) {
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl shadow-black/10 border border-white/60 overflow-hidden hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
+    <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl shadow-violet-100/50 border border-[#E4DDF5] overflow-hidden hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
       
       {/* 3D Icon Area */}
       <div className={`h-52 flex items-center justify-center bg-gradient-to-br ${colorFrom} ${colorTo} relative overflow-hidden`}>
@@ -44,11 +44,11 @@ export default function RecommendedCard({
 
       {/* Content */}
       <div className="p-6">
-        <h4 className="font-semibold text-lg text-gray-900 leading-tight mb-2 line-clamp-2">
+        <h4 className="font-semibold text-lg text-[#172033] leading-tight mb-2 line-clamp-2">
           {title}
         </h4>
         
-        <p className="text-gray-600 text-sm mb-5">
+        <p className="text-slate-600 text-sm mb-5">
           {instructor}
         </p>
 
@@ -56,11 +56,11 @@ export default function RecommendedCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Star size={18} className="text-amber-500 fill-amber-500" />
-            <span className="font-semibold text-gray-900">{rating}</span>
+            <span className="font-semibold text-[#172033]">{rating}</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-gray-500 text-sm font-medium">
+            <span className="text-slate-500 text-sm font-medium">
               {students.toLocaleString()}
             </span>
             

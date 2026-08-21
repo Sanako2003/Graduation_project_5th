@@ -36,24 +36,24 @@ export default function CourseHero({
   className = "",
 }: CourseHeroProps) {
   return (
-    <section className={`bg-white ${className}`}>
+    <section className={`bg-[#F7F5FF] ${className}`}>
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
           {/* Text */}
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight text-gray-900">
+            <h1 className="text-3xl md:text-4xl font-bold leading-tight text-[#172033]">
               {title}
               {subtitle ? (
                 <>
                   <br />
-                  <span className="text-gray-800">{subtitle}</span>
+                  <span className="text-slate-800">{subtitle}</span>
                 </>
               ) : null}
             </h1>
 
-            <p className="mt-4 text-gray-600 leading-relaxed">{description}</p>
+            <p className="mt-4 text-slate-600 leading-relaxed">{description}</p>
 
-            <div className="mt-5 flex items-center gap-3 text-sm text-gray-600">
+            <div className="mt-5 flex items-center gap-3 text-sm text-slate-600">
               <span>⭐ {rating.toFixed(1)}</span>
               <span className="text-gray-300">•</span>
               <span>{enrolledText}</span>
@@ -62,7 +62,7 @@ export default function CourseHero({
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href={primaryCta.href}
-                className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-semibold text-white bg-purple-600 hover:bg-purple-700 transition"
+                className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-semibold text-white bg-violet-600 hover:bg-violet-700 transition"
               >
                 {primaryCta.label}
               </Link>
@@ -70,7 +70,7 @@ export default function CourseHero({
               {secondaryCta ? (
                 <Link
                   href={secondaryCta.href}
-                  className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 transition"
+                  className="inline-flex items-center justify-center rounded-xl border border-violet-200 px-5 py-2.5 font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 transition"
                 >
                   {secondaryCta.label}
                 </Link>
@@ -79,7 +79,7 @@ export default function CourseHero({
           </div>
 
           {/* Image */}
-          <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow">
+          <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden border border-[#E4DDF5] shadow">
             <Image
               src={image}
               alt={imageAlt}

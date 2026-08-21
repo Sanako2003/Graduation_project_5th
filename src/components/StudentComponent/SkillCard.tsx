@@ -24,16 +24,16 @@ export default function SkillsCard({ skills }: SkillsCardProps) {
   };
 
   return (
-    <div className="bg-white/30 backdrop-blur-2xl rounded-3xl shadow-xl shadow-black/10 border border-white/50 p-8 relative overflow-hidden">
+    <div className="bg-white/90 backdrop-blur-2xl rounded-3xl shadow-xl shadow-violet-100/50 border border-[#E4DDF5] p-8 relative overflow-hidden">
       {/* Subtle inner glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-50/40 via-cyan-50/30 to-transparent pointer-events-none rounded-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-50/50 via-teal-50/30 to-transparent pointer-events-none rounded-3xl" />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h3 className="text-gray-700 text-sm font-semibold uppercase tracking-widest">
+        <h3 className="text-slate-700 text-sm font-semibold uppercase tracking-widest">
           SKILLS & PROFICIENCY
         </h3>
-        <div className="flex items-center gap-2 px-4 py-1 bg-white/70 backdrop-blur-md rounded-full text-xs font-medium text-purple-700">
+        <div className="flex items-center gap-2 px-4 py-1 bg-violet-50 backdrop-blur-md rounded-full text-xs font-medium text-violet-700">
           <Brain className="w-4 h-4" />
           AI ADVISED
         </div>
@@ -47,7 +47,7 @@ export default function SkillsCard({ skills }: SkillsCardProps) {
             <div key={index} className="space-y-3">
               {/* Skill Name + Percentage */}
               <div className="flex items-center justify-between">
-                <span className="text-gray-800 font-medium text-[15px]">
+                <span className="text-slate-800 font-medium text-[15px]">
                   {skill.name}
                 </span>
                 <span className={`font-bold text-base ${colorClasses.text}`}>
@@ -56,7 +56,7 @@ export default function SkillsCard({ skills }: SkillsCardProps) {
               </div>
 
               {/* Progress Bar Container */}
-              <div className="relative h-2.5 bg-white/60 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/70">
+              <div className="relative h-2.5 bg-violet-50 backdrop-blur-sm rounded-2xl overflow-hidden border border-violet-100">
                 <div
                   className={`absolute top-0 left-0 h-full rounded-2xl transition-all duration-700 ease-out ${colorClasses.bar} ${colorClasses.glow}`}
                   style={{ width: `${skill.percentage}%` }}

@@ -375,7 +375,7 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div dir="ltr" className="min-h-screen bg-[#F4F7FB] relative overflow-hidden font-sans text-slate-800">
+    <div dir="ltr" className="min-h-screen bg-[#F7F5FF] relative overflow-hidden font-sans text-slate-800">
       {loading && <div className="fixed inset-0 z-[200] grid place-items-center bg-white/70 text-violet-700 font-bold backdrop-blur-sm">Loading dashboard...</div>}
       {apiError && <div className="relative z-[201] mx-auto mt-4 max-w-3xl rounded-2xl bg-rose-50 px-5 py-4 text-center font-semibold text-rose-700">{apiError}</div>}
       <style dangerouslySetInnerHTML={{ __html: `
@@ -397,7 +397,7 @@ export default function AdminDashboardPage() {
       <div className="absolute bottom-[28%] -left-10 w-64 h-64 bg-gradient-to-tr from-[#8B5CF6]/35 to-[#2563EB]/20 rounded-[2.5rem] pointer-events-none anim-f-1" />
       <div className="absolute bottom-[16%] -right-8 w-56 h-56 bg-gradient-to-bl from-[#EAB308]/30 to-[#F59E0B]/20 rounded-[2rem] pointer-events-none anim-f-3" />
       <div className="absolute bottom-6 left-[35%] w-80 h-48 bg-gradient-to-r from-[#2563EB]/35 to-[#4E37D3]/25 rounded-[2.2rem] pointer-events-none blur-[1px] anim-f-1" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#EAEFF7]/10 via-transparent to-[#E3E9F8]/20 pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#EEE9FF]/30 via-transparent to-[#E4DDF5]/25 pointer-events-none z-0" />
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-10 space-y-10">
         <header className="text-center space-y-2">
@@ -408,7 +408,7 @@ export default function AdminDashboardPage() {
           {stats.map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.title} className="group relative overflow-hidden rounded-3xl border border-white/50 bg-white/80 px-6 py-7 shadow-2xl shadow-violet-100/50 backdrop-blur-xl transition duration-500 hover:-translate-y-1">
+              <div key={s.title} className="group relative overflow-hidden rounded-3xl border border-[#E4DDF5] bg-white/90 px-6 py-7 shadow-xl shadow-violet-100/50 backdrop-blur-xl transition duration-500 hover:-translate-y-1">
                 <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-lg ${s.color}`}><Icon size={22} /></div>
                 <p className="text-sm font-medium text-slate-400">{s.title}</p>
                 <h3 className="mt-1 text-3xl font-extrabold text-slate-800">{s.value}</h3>
@@ -421,7 +421,7 @@ export default function AdminDashboardPage() {
           {infoCards.map((c) => {
             const Icon = c.icon;
             return (
-              <div key={c.title} className="flex items-center gap-5 rounded-3xl border border-white/60 bg-white/80 p-6 shadow-xl backdrop-blur-xl transition duration-500 hover:-translate-y-1">
+              <div key={c.title} className="flex items-center gap-5 rounded-3xl border border-[#E4DDF5] bg-white/90 p-6 shadow-xl shadow-violet-100/40 backdrop-blur-xl transition duration-500 hover:-translate-y-1">
                 <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-md ${c.color}`}><Icon size={26} /></div>
                 <div><h4 className="text-xl font-extrabold text-slate-800">{c.value}</h4><p className="text-sm font-semibold text-slate-500">{c.title}</p><p className="text-xs text-slate-400">{c.desc}</p></div>
               </div>
@@ -440,7 +440,7 @@ export default function AdminDashboardPage() {
         </section> */}
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-white/60 bg-white/80 shadow-2xl backdrop-blur-xl">
+          <div className="rounded-3xl border border-[#E4DDF5] bg-white/90 shadow-xl shadow-violet-100/50 backdrop-blur-xl">
             <div className="flex items-center justify-between border-b border-violet-100/50 px-6 py-5">
               <h3 className="text-lg font-extrabold">Latest Students</h3>
               <button onClick={() => setShowStudents(true)} className="inline-flex items-center gap-1 text-sm font-bold text-violet-600 hover:underline">View All <ArrowLeft size={16} /></button>
@@ -463,7 +463,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/60 bg-white/80 shadow-2xl backdrop-blur-xl">
+          <div className="rounded-3xl border border-[#E4DDF5] bg-white/90 shadow-xl shadow-violet-100/50 backdrop-blur-xl">
             <div className="flex items-center justify-between border-b border-violet-100/50 px-6 py-5">
               <h3 className="text-lg font-extrabold">Latest Instructors</h3>
               <button onClick={() => setShowInstructors(true)} className="inline-flex items-center gap-1 text-sm font-bold text-violet-600 hover:underline">View All <ArrowLeft size={16} /></button>
@@ -486,7 +486,7 @@ export default function AdminDashboardPage() {
       {showInstructors && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[#0F172A]/40 backdrop-blur-[6px]" onClick={() => setShowInstructors(false)} />
-          <div className="relative w-full max-w-[850px] max-h-[85vh] bg-white/95 backdrop-blur-2xl rounded-[1.8rem] shadow-2xl border border-white flex flex-col overflow-hidden">
+          <div className="relative w-full max-w-[850px] max-h-[85vh] bg-white/95 backdrop-blur-2xl rounded-[1.8rem] shadow-2xl border border-[#E4DDF5] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-8 py-5 border-b"><h2 className="text-[22px] font-extrabold text-[#2D1B4D]">All Instructors</h2><button onClick={() => setShowInstructors(false)} className="w-9 h-9 rounded-full hover:bg-slate-100 flex items-center justify-center"><X size={20}/></button></div>
             <div className="flex-1 overflow-y-auto divide-y divide-slate-100/80">
               {allInstructorsFull.map((t,i) => (
@@ -515,16 +515,16 @@ export default function AdminDashboardPage() {
       {showStudents && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
           <div className="absolute inset-0 bg-[#0F172A]/50 backdrop-blur-[8px]" onClick={()=>setShowStudents(false)} />
-          <div className="relative w-full max-w-[1000px] max-h-[92vh] bg-[#F6F3FA]/90 backdrop-blur-2xl rounded-[1.8rem] shadow-[0_25px_80px_-20px_rgba(0,0,0,0.5)] border border-white flex flex-col overflow-hidden">
+          <div className="relative w-full max-w-[1000px] max-h-[92vh] bg-[#F7F5FF]/95 backdrop-blur-2xl rounded-[1.8rem] shadow-[0_25px_80px_-20px_rgba(0,0,0,0.5)] border border-[#E4DDF5] flex flex-col overflow-hidden">
             <div className="px-6 sm:px-8 py-5">
               <div className="flex justify-between items-start">
                 <div className="w-10 h-10 rounded-full bg-[#2D2B3A] flex items-center justify-center text-white"><span className="text-lg">🌙</span></div>
                 <h2 className="text-3xl font-extrabold text-[#5B3E8A] tracking-tight">All Students</h2>
-                <button onClick={()=>setShowStudents(false)} className="w-9 h-9 rounded-full bg-white shadow flex items-center justify-center hover:bg-slate-50"><X size={18}/></button>
+                <button onClick={()=>setShowStudents(false)} className="w-9 h-9 rounded-full bg-white shadow flex items-center justify-center hover:bg-violet-50"><X size={18}/></button>
               </div>
               <div className="flex gap-3 mt-6">
                 <div className="flex-1 relative">
-                  <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search student by name or email..." className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" style={{direction:'ltr'}} />
+                  <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search student by name or email..." className="w-full rounded-2xl border border-[#E4DDF5] bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" style={{direction:'ltr'}} />
                 </div>
                 <button className="bg-[#6B5B8C] text-white px-6 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow"><Search size={18}/> Search</button>
               </div>
@@ -538,7 +538,7 @@ export default function AdminDashboardPage() {
                 </select>
               </div>
             </div>
-            <div className="mx-3 sm:mx-6 bg-[#6B4F8A] text-white rounded-t-2xl grid grid-cols-12 text-sm font-bold py-3 px-4">
+            <div className="mx-3 sm:mx-6 bg-[#5B21B6] text-white rounded-t-2xl grid grid-cols-12 text-sm font-bold py-3 px-4">
               <div className="col-span-3 text-center">Promote</div>
               <div className="col-span-4 text-center">Email</div>
               <div className="col-span-2 text-center">Student Name</div>
@@ -569,7 +569,7 @@ export default function AdminDashboardPage() {
       {showAddStudent && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[#0F172A]/40 backdrop-blur-[6px]" onClick={()=>setShowAddStudent(false)} />
-          <div className="relative w-full max-w-[500px] bg-white/95 backdrop-blur-2xl rounded-[1.8rem] shadow-[0_25px_80px_-20px_rgba(0,0,0,0.4)] border border-white p-8">
+          <div className="relative w-full max-w-[500px] bg-white/95 backdrop-blur-2xl rounded-[1.8rem] shadow-[0_25px_80px_-20px_rgba(0,0,0,0.4)] border border-[#E4DDF5] p-8">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-extrabold text-[#2D1B4D]">Add New Student</h3>
               <button onClick={()=>setShowAddStudent(false)} className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center"><X size={18}/></button>

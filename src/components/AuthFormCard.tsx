@@ -80,7 +80,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F4F7FB] px-4 py-10 font-sans sm:px-6 lg:px-8">
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F5FF] px-4 py-10 font-sans sm:px-6 lg:px-8">
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -109,7 +109,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
       <div className="absolute bottom-10 left-[10%] h-48 w-48 rounded-[1.8rem] bg-gradient-to-tr from-[#06B6D4]/30 to-[#10B981]/20 animate-fluid-3" />
       <div className="absolute bottom-[8%] right-[8%] h-56 w-56 rounded-[2rem] bg-gradient-to-bl from-[#F59E0B]/25 to-[#E37D73]/20 animate-fluid-1" />
 
-      <div className="relative z-10 mx-auto max-w-4xl overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/90 p-3 shadow-[0_24px_80px_-24px_rgba(78,55,211,0.30)] backdrop-blur-xl">
+      <div className="relative z-10 mx-auto max-w-4xl overflow-hidden rounded-[2.5rem] border border-[#E4DDF5] bg-white/90 p-3 shadow-[0_24px_80px_-24px_rgba(78,55,211,0.30)] backdrop-blur-xl">
         <section className="w-full rounded-[2rem] bg-white p-8 sm:p-10 lg:p-12">
           <div className="flex items-center justify-between">
             <Link
@@ -118,7 +118,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
             >
               ← Back to home
             </Link>
-            <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-purple-600">
+            <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
               {isLogin ? "Welcome back" : "New here"}
             </span>
           </div>
@@ -157,7 +157,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required={!isLogin}
-                  className="w-full rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-100"
+                  className="w-full rounded-[1rem] border border-[#E4DDF5] bg-[#F7F5FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                 />
               </div>
             )}
@@ -176,7 +176,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-100"
+                className="w-full rounded-[1rem] border border-[#E4DDF5] bg-[#F7F5FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
               />
             </div>
 
@@ -194,7 +194,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-100"
+                className="w-full rounded-[1rem] border border-[#E4DDF5] bg-[#F7F5FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
               />
             </div>
 
@@ -210,7 +210,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
                   id="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-100"
+                  className="w-full rounded-[1rem] border border-[#E4DDF5] bg-[#F7F5FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                 >
                   <option value="student">Student</option>
                   <option value="instructor">Instructor</option>
@@ -221,7 +221,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
             <button
               type="submit"
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-[1rem] bg-purple-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center gap-2 rounded-[1rem] bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -240,7 +240,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
             </span>
             <Link
               href={isLogin ? "/register" : "/login"}
-              className="font-semibold text-purple-600 transition hover:text-purple-700"
+              className="font-semibold text-violet-600 transition hover:text-violet-700"
             >
               {isLogin ? "Create account" : "Sign in"}
             </Link>
