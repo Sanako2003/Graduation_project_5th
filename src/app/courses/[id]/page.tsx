@@ -4,8 +4,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import CourseDetailsClient from "../../../components/CourseComponent/CourseDetailsClient";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 export interface Module {
   id: number;
   name: string;
@@ -17,7 +15,7 @@ export interface Module {
 
 export interface LearningOutcome {
   id: number;
-  outcome: string; // عدّل هنا لو اسم الحقل مختلف في LearningOutcomeResource
+  outcome: string;
 }
 
 export interface CourseData {
@@ -52,12 +50,8 @@ interface ApiResponse {
   data: CourseData;
 }
 
-// ── Config ────────────────────────────────────────────────────────────────────
-
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
-
-// ── Fetch helper ──────────────────────────────────────────────────────────────
 
 async function fetchCourse(id: string): Promise<CourseData> {
   const token =
@@ -72,7 +66,6 @@ async function fetchCourse(id: string): Promise<CourseData> {
 
   const res = await fetch(`${API_BASE_URL}/courses/${id}`, {
     headers,
-    // credentials: "include", // فعّل هنا لو بتستخدم Cookie-based auth
   });
 
   if (!res.ok) {
@@ -83,8 +76,6 @@ async function fetchCourse(id: string): Promise<CourseData> {
   const json: ApiResponse = await res.json();
   return json.data;
 }
-
-// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function DynamicCoursePage() {
   const params = useParams();
@@ -109,7 +100,6 @@ export default function DynamicCoursePage() {
     load();
   }, [load]);
 
-  // ── Loading ───────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 bg-[#F7F5FF]">
@@ -119,13 +109,10 @@ export default function DynamicCoursePage() {
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────────────────────
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 bg-[#F7F5FF] px-4">
-        <p className="text-red-500 font-bold text-lg">
-          ⚠️ Failed to load course
-        </p>
+        <p className="text-red-500 font-bold text-lg">⚠️ Failed to load course</p>
         <p className="text-slate-500 text-sm text-center max-w-md">{error}</p>
         <button
           onClick={load}
@@ -137,7 +124,6 @@ export default function DynamicCoursePage() {
     );
   }
 
-  // ── Not Found ─────────────────────────────────────────────────────────────
   if (!courseData) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] bg-[#F7F5FF]">

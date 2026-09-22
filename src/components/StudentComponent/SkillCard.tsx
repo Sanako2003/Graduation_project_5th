@@ -6,20 +6,49 @@ type Skill = {
   color?: string; // purple, cyan, pink, amber, etc.
 };
 
-type SkillsCardProps = {
-  skills: Skill[];
-};
+const defaultSkills: Skill[] = [
+  { name: "JavaScript", percentage: 85, color: "amber" },
+  { name: "React", percentage: 78, color: "cyan" },
+  { name: "UI/UX Design", percentage: 72, color: "pink" },
+  { name: "Problem Solving", percentage: 88, color: "purple" },
+];
 
-export default function SkillsCard({ skills }: SkillsCardProps) {
+export default function SkillsCard() {
+  const skills = defaultSkills;
   const getColorClasses = (color: string = "purple") => {
-    const colors: Record<string, { bar: string; text: string; glow: string }> = {
-      purple: { bar: "bg-purple-500", text: "text-purple-600", glow: "shadow-purple-500/50" },
-      cyan:   { bar: "bg-cyan-500",   text: "text-cyan-600",   glow: "shadow-cyan-500/50" },
-      pink:   { bar: "bg-pink-500",   text: "text-pink-600",   glow: "shadow-pink-500/50" },
-      amber:  { bar: "bg-amber-500",  text: "text-amber-600",  glow: "shadow-amber-500/50" },
-      blue:   { bar: "bg-blue-500",   text: "text-blue-600",   glow: "shadow-blue-500/50" },
-      emerald:{ bar: "bg-emerald-500",text: "text-emerald-600",glow: "shadow-emerald-500/50" },
-    };
+    const colors: Record<string, { bar: string; text: string; glow: string }> =
+      {
+        purple: {
+          bar: "bg-purple-500",
+          text: "text-purple-600",
+          glow: "shadow-purple-500/50",
+        },
+        cyan: {
+          bar: "bg-cyan-500",
+          text: "text-cyan-600",
+          glow: "shadow-cyan-500/50",
+        },
+        pink: {
+          bar: "bg-pink-500",
+          text: "text-pink-600",
+          glow: "shadow-pink-500/50",
+        },
+        amber: {
+          bar: "bg-amber-500",
+          text: "text-amber-600",
+          glow: "shadow-amber-500/50",
+        },
+        blue: {
+          bar: "bg-blue-500",
+          text: "text-blue-600",
+          glow: "shadow-blue-500/50",
+        },
+        emerald: {
+          bar: "bg-emerald-500",
+          text: "text-emerald-600",
+          glow: "shadow-emerald-500/50",
+        },
+      };
     return colors[color] || colors.purple;
   };
 

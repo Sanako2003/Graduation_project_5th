@@ -6,6 +6,7 @@ import CourseCard from "./CourseCard";
 type Course = {
   id: number;
   title: string;
+  category?: string;
   price: number;
   average_rating: number;
   image: string;
@@ -43,9 +44,10 @@ export default function CoursesSection() {
         coursesArray.map((c: any) => ({
           id: c.id,
           title: c.title,
+          category: c.domain?.name ?? c.category ?? c.domain_name ?? "General",
           price: Number(c.price) || 0,
           average_rating: Number(c.average_rating) || 0,
-          image: c.image || "https://placehold.co/600x400",
+          image: c.image || c.thumbnail || c.cover_image || "",
           students: c.students_count || 0,
           enrolledText: c.enrolledText || "",
         })),
@@ -66,7 +68,7 @@ export default function CoursesSection() {
   const pageNumbers = [page];
 
   return (
-    <section className="py-12 bg-[#EEE9FF]">
+    <section className="py-12 bg-[#F8F7FF]">
       <div className="px-4 mx-auto max-w-7xl">
         <div className="max-w-md mx-auto text-center">
           <h2 className="text-3xl font-bold text-[#172033]">

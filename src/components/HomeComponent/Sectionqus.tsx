@@ -35,7 +35,7 @@ export default function TechAssessmentHero(): React.JSX.Element {
   const rotateY = useTransform(mouseX, [-200, 200], [-10, 10]);
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#F7F5FF] px-4 py-16 sm:px-8 lg:px-16 flex items-center justify-center">
+    <section className="relative w-full overflow-hidden bg-[#F1EDFF] px-4 py-16 sm:px-8 lg:px-16 flex items-center justify-center">
       <div 
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}

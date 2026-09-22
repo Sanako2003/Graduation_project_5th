@@ -25,7 +25,15 @@ export default function CoursesPageClient() {
 
   const domainIdFromUrl = searchParams.get("domain_id") || "";
   const categoryFromUrl = searchParams.get("category") || "";
-  const searchFromUrl = searchParams.get("search") || "";
+  const browserQuery =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const searchFromUrl =
+    searchParams.get("search") ||
+    searchParams.get("q") ||
+    browserQuery?.get("q") ||
+    "";
   const pageFromUrl = Number(searchParams.get("page") || "1");
 
   const [domains, setDomains] = useState<DomainOption[]>([]);
@@ -71,10 +79,17 @@ export default function CoursesPageClient() {
           params.set("category", categoryName);
         }
         if (searchTerm) {
+          // q is a frontend URL alias; Laravel expects the search filter.
           params.set("search", searchTerm);
         }
 
-        const data = await apiFetch<any>(`/courses?${params.toString()}`);
+        const endpoint = `/courses?${params.toString()}`;
+
+        console.log("Courses request:", endpoint);
+
+        const data = await apiFetch<any>(endpoint);
+
+        console.log("Courses response:", data);
 
         const mapped: Course[] = (data.data || []).map((c: any) => ({
           id: c.id,
@@ -82,7 +97,7 @@ export default function CoursesPageClient() {
           category: c.domain?.name ?? "General",
           price: Number(c.price) || 0,
           rating: Number(c.average_rating) || 0,
-          image: c.thumbnail || "https://placehold.co/600x400?text=Course",
+          image: c.thumbnail || c.image || c.cover_image || "",
         }));
 
         setCourses(mapped);
@@ -107,13 +122,21 @@ export default function CoursesPageClient() {
   };
 
   useEffect(() => {
-    const targetDomainId = domainIdFromUrl || findDomainIdByCategory(categoryFromUrl);
+    const targetDomainId =
+      domainIdFromUrl || findDomainIdByCategory(categoryFromUrl);
     setActiveDomainId(targetDomainId);
     setActiveSearch(searchFromUrl);
     setSearchInput(searchFromUrl);
     setPage(pageFromUrl);
     loadCourses(pageFromUrl, targetDomainId, categoryFromUrl, searchFromUrl);
-  }, [categoryFromUrl, domainIdFromUrl, searchFromUrl, domains, pageFromUrl, loadCourses]);
+  }, [
+    categoryFromUrl,
+    domainIdFromUrl,
+    searchFromUrl,
+    domains,
+    pageFromUrl,
+    loadCourses,
+  ]);
 
   const handleDomainClick = (domainId: string) => {
     const params = new URLSearchParams();

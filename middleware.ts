@@ -4,6 +4,16 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (pathname === "/courses" && request.nextUrl.searchParams.has("q")) {
+    const rewrittenUrl = request.nextUrl.clone();
+    rewrittenUrl.searchParams.set(
+      "search",
+      request.nextUrl.searchParams.get("q") || "",
+    );
+    rewrittenUrl.searchParams.delete("q");
+    return NextResponse.rewrite(rewrittenUrl);
+  }
+
   // ما بنحمي الصفحات العامة
   const publicPaths = ["/login", "/register", "/about", "/contact"];
   if (publicPaths.some((p) => pathname.startsWith(p))) {

@@ -88,7 +88,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative min-h-[90vh] flex items-center bg-gradient-to-r from-violet-700 via-fuchsia-600 to-indigo-600 overflow-hidden pt-30 pb-20">
+    <section className="relative min-h-[90vh] flex items-center bg-gradient-to-r from-[#6D28D9] via-[#A21CAF] to-[#4F46E5] overflow-hidden pt-30 pb-20">
       {/* خلفية متحركة بسيطة */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-1/2 -right-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-white/15 to-teal-200/20 rounded-full blur-3xl animate-pulse" />

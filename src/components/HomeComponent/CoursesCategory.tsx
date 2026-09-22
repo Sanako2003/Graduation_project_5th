@@ -182,7 +182,7 @@ export default function CoursesCategory() {
   }, []);
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#F7F5FF] py-24 px-6">
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#F1EDFF] py-24 px-6">
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute -top-[10%] -left-[10%] h-[70%] w-[70%] rounded-full bg-purple-200/40 blur-[140px]" />
         <div className="absolute top-[20%] right-[5%] h-[60%] w-[50%] rounded-full bg-blue-100/50 blur-[120px]" />

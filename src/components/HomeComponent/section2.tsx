@@ -14,11 +14,11 @@ const duplicatedLogos = [...logos, ...logos, ...logos, ...logos];
 
 export default function TrustedBy() {
   return (
-    <div className="w-full bg-[#EEE9FF] py-10 overflow-hidden border-y border-[#E4DDF5]">
+    <div className="w-full bg-[#F8F7FF] py-10 overflow-hidden border-y border-[#E4DDF5]">
       <div className="max-w-7xl mx-auto flex items-center">
         
         {/* كلمة Trusted By الثابتة على اليسار (اختياري حسب التصميم) */}
-        <div className="px-8 z-10 bg-[#EEE9FF] shadow-[10px_0_15px_rgba(238,233,255,0.9)]">
+        <div className="px-8 z-10 bg-[#F8F7FF] shadow-[10px_0_15px_rgba(248,247,255,0.9)]">
           <span className="text-slate-500 text-sm font-medium whitespace-nowrap">Trusted by</span>
         </div>
 

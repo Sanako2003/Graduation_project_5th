@@ -81,7 +81,7 @@ export default function ProfilePage() {
           github={data.about.github ?? undefined}
           interests={data.about.interests}
         />
-        <SkillsCard skills={data.skills} />
+        <SkillsCard />
       </div>
 
       {data.courses.length > 0 && (

@@ -37,21 +37,33 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
 
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify(body),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+
+      if (!data) {
+        setError(`الخادم رجّع استجابة غير متوقعة (${res.status}).`);
+        return;
+      }
 
       if (!res.ok) {
-        if (data.errors) {
-          const firstError = Object.values(
-            data.errors as Record<string, string[]>,
-          )[0][0];
-          setError(firstError);
-        } else {
-          setError(data.message || "حدث خطأ، حاول مرة ثانية");
-        }
+        const messages = Object.values(
+          (data.errors ?? {}) as Record<string, string[]>,
+        ).flat();
+
+        setError(
+          messages.length > 0
+            ? messages.join(" — ")
+            : isLogin
+              ? "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+              : data.message || "تعذّر تنفيذ الطلب، حاولي مرة ثانية.",
+        );
+
         return;
       }
 
@@ -66,7 +78,7 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
       } else {
         // register رجع token مباشرة — سجل الدخول تلقائياً
         setUser({
-           ...data.user,
+          ...data.user,
           role: data.user.roles?.[0] ?? "student", // ناخد أول role من الـ array
         });
         localStorage.setItem("token", data.token);
@@ -213,7 +225,6 @@ export default function AuthFormCard({ mode }: AuthFormCardProps) {
                   className="w-full rounded-[1rem] border border-[#E4DDF5] bg-[#F7F5FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                 >
                   <option value="student">Student</option>
-                  <option value="instructor">Instructor</option>
                 </select>
               </div>
             )}

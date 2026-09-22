@@ -153,7 +153,7 @@ export default function Testimonials() {
   const visibleData = usingMock ? data.slice(0, 6) : data;
 
   return (
-    <section className="px-8 py-16 bg-[#EEE9FF]">
+    <section className="px-8 py-16 bg-[#F8F7FF]">
       {/* Header */}
       <div className="text-center mb-4">
         <h2 className="text-3xl font-bold text-[#172033]">What Our Learners Are Saying</h2>
