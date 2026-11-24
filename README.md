@@ -210,3 +210,44 @@ This project is developed for academic purposes as part of a graduation requirem
 ---
 
 > *"The best way to learn is to build something real."*
+
+
+# Masar — Hybrid AI Course Recommendation Platform
+
+**Masar** is an intelligent educational platform that helps learners discover tailored tech career paths and matches partial course descriptions to the most relevant courses using a hybrid NLP retrieval pipeline.
+
+> **Note:** The core AI training and evaluation codebase is maintained in a private repository to protect intellectual property, while this repository showcases the system architecture, evaluation methodology, and frontend web application.
+
+---
+
+## 🧠 AI System Architecture & Workflow
+
+The recommendation engine combines **conditional title generation** with **chunk-based semantic retrieval** over a fixed catalog of 1,900 IT courses:
+
+1. **Data Preparation & Leak-Free Partitioning:** Course metadata (syllabus, modules, outcomes, skills, and level) is cleaned, normalized, and split into 4 disjoint partitions (`A, B, C, D`) per course (`A+B` for training, `C` for validation, `D` for testing) to ensure zero data leakage under a fixed-catalog retrieval protocol.
+2. **Candidate Title Generation (`T5-base` + `LoRA`):** Fine-tuned using Parameter-Efficient Fine-Tuning (`LoRA`, rank=8) to generate candidate course titles from partial (25%) course content.
+3. **Semantic Retrieval & Hybrid Ranking (`all-MiniLM-L6-v2`):** Encodes generated titles and chunked course documents (40 words/chunk), averaging top-3 chunk cosine similarities and combining title, content, and matcher scores via tuned hybrid weights to rank catalog courses (`Top-1`, `Top-5`, `MRR`).
+
+![Hybrid Course Recommendation Workflow](assets/workflow.png)
+
+---
+
+## 🖥️ Platform UI Showcase
+
+Built with **Next.js, TypeScript, and Tailwind CSS**, the interface guides users through an interactive tech aptitude discovery flow and personalized course exploration:
+
+### Landing & Learning Paths
+![Masar Landing Page](assets/ui-landing.png)
+
+### Tech Aptitude Scale & Domain Discovery
+![Masar Domain Discovery](assets/ui-discovery.png)
+
+### Interactive Career Assessment
+![Masar Assessment Flow](assets/ui-assessment.png)
+
+---
+
+## 🛠️ Tech Stack
+
+* **AI & NLP Pipeline:** PyTorch, Hugging Face Transformers (`T5-base`), PEFT (`LoRA`), SentenceTransformers (`all-MiniLM-L6-v2`), Scikit-learn, Pandas
+* **Frontend Application:** Next.js, TypeScript, Tailwind CSS
